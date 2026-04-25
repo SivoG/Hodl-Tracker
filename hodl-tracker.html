@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>HODL Tracker</title>
+
+  <!-- VT323 = Retro Pixel Terminal (nur für große Elemente)  -->
+  <!-- Space Mono = lesbare Monospace für alle Datenwerte     -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN TOKENS — Retro Terminal × Bitcoin
+    ═══════════════════════════════════════════ */
+    :root {
+      /* Backgrounds — near-black with a green tint */
+      --bg:        #080c06;
+      --surface:   #0d1509;
+      --surface2:  #111d0c;
+      --surface3:  #162110;
+
+      /* Borders & Glows */
+      --border:    #1d2e16;
+      --border2:   #253d1c;
+      --glow-g:    rgba(57, 211, 83,  .13);
+      --glow-o:    rgba(247,147, 26,  .14);
+
+      /* Accent — Bitcoin Orange (prices, key numbers) */
+      --orange:    #f7931a;
+      --orange-dim:#7a4a0d;
+
+      /* Accent — Terminal Green (labels, UI, indicators) */
+      --green:     #39d353;
+      --green-dim: #1c6b2c;
+      --green-pale:#c6eec0;
+
+      /* Text */
+      --text:      #cce8c4;   /* slightly green-tinted white — very readable */
+      --muted:     #4e6b46;
+      --muted2:    #324429;
+
+      /* Status */
+      --up:        #39d353;
+      --down:      #e8445a;
+      --blue:      #7dd4f7;
+      --lime:      #b8f77e;
+
+      /* Typography */
+      --terminal:  'VT323', monospace;      /* retro pixel — only for big display */
+      --mono:      'Space Mono', monospace; /* readable data font               */
+
+      --radius:    10px;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      /* Subtle green scanline texture across the whole page */
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,20,0,.08) 3px,
+        rgba(0,20,0,.08) 4px
+      );
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 52px;
+    }
+
+    /* Shared card */
+    .card {
+      width: calc(100% - 40px);
+      max-width: 480px;
+      margin: 12px 20px 0;
+      padding: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      /* Green inner glow */
+      box-shadow: inset 0 0 20px var(--glow-g), 0 2px 12px rgba(0,0,0,.5);
+    }
+
+    /* ═══════════════════════════════════════════
+       HEADER — Terminal Hero
+    ═══════════════════════════════════════════ */
+    header {
+      width: 100%;
+      max-width: 480px;
+      padding: 28px 20px 0;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Bitcoin ₿ icon — orange circle */
+    .logo-icon {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--terminal);
+      font-size: 24px;
+      color: #000;
+      box-shadow: 0 0 14px var(--glow-o);
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: var(--terminal);
+      font-size: 38px;
+      line-height: 1;
+      color: var(--green);
+      /* Terminal phosphor glow */
+      text-shadow: 0 0 12px rgba(57,211,83,.6), 0 0 30px rgba(57,211,83,.2);
+      letter-spacing: 2px;
+    }
+
+    /* Blinking cursor after logo */
+    .logo-cursor {
+      display: inline-block;
+      width: 3px;
+      height: 28px;
+      background: var(--green);
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+      box-shadow: 0 0 8px var(--green);
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .subtitle {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-top: 6px;
+      font-family: var(--mono);
+    }
+
+    /* ═══════════════════════════════════════════
+       TICKER BAR — BTC Price
+    ═══════════════════════════════════════════ */
+    .ticker-bar {
+      width: calc(100% - 40px);
+      max-width: 480px;
+      margin: 16px 20px 0;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      box-shadow: inset 0 0 16px var(--glow-o), 0 2px 12px rgba(0,0,0,.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ticker-left {}
+    .ticker-label {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .ticker-price {
+      font-family: var(--terminal);
+      font-size: 42px;
+      line-height: 1;
+      color: var(--orange);
+      text-shadow: 0 0 14px rgba(247,147,26,.5);
+      letter-spacing: 1px;
+    }
+
+    .ticker-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+    }
+    .ticker-change {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-family: var(--mono);
+    }
+    .ticker-change.up   { background: rgba(57,211,83,.12);  border: 1px solid var(--green-dim); color: var(--up);   }
+    .ticker-change.down { background: rgba(232,68,90,.12);   border: 1px solid #5a1c27;          color: var(--down); }
+    .ticker-updated {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .05em;
+    }
+
+    /* ═══════════════════════════════════════════
+       INPUT
+    ═══════════════════════════════════════════ */
+    .input-label {
+      font-size: 9px;
+      color: var(--green);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      /* Terminal prompt style */
+    }
+    .input-label::before {
+      content: '> ';
+      color: var(--orange);
+    }
+    .input-row { display: flex; gap: 10px; }
+    .btc-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--orange);
+      font-family: var(--terminal);
+      font-size: 32px;
+      line-height: 1;
+      padding: 10px 14px 8px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -moz-appearance: textfield;
+      caret-color: var(--green);
+    }
+    .btc-input::-webkit-outer-spin-button,
+    .btc-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .btc-input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgba(57,211,83,.15), inset 0 0 10px rgba(57,211,83,.05);
+    }
+    .btc-input::placeholder { color: var(--muted2); }
+    .input-unit {
+      background: var(--orange);
+      color: #000;
+      font-family: var(--terminal);
+      font-size: 22px;
+      letter-spacing: 1px;
+      border-radius: 8px;
+      padding: 10px 16px 8px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 0 12px var(--glow-o);
+    }
+
+    /* ═══════════════════════════════════════════
+       ★ RANKING CARD
+    ═══════════════════════════════════════════ */
+    .rank-card {
+      background: var(--surface2);
+      border: 1px solid var(--green-dim);
+      box-shadow: 0 0 20px var(--glow-g), inset 0 0 20px rgba(57,211,83,.04);
+      position: relative;
+    }
+
+    /* Top section: big number + tier */
+    .rank-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .rank-hero-label {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .rank-hero-label::before { content: '// '; color: var(--green-dim); }
+    .rank-hero-number {
+      font-family: var(--terminal);
+      font-size: 52px;
+      line-height: 1;
+      color: var(--green);
+      text-shadow: 0 0 18px rgba(57,211,83,.55);
+      letter-spacing: 1px;
+    }
+    .rank-hero-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .rank-hero-sub strong { color: var(--text); }
+
+    .rank-placeholder {
+      text-align: center;
+      padding: 8px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .rank-placeholder::before { content: '_ '; color: var(--green); animation: blink 1s step-end infinite; }
+
+    /* Tier badge */
+    .tier-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(0,0,0,.4);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 6px 12px 6px 8px;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+    .tier-emoji { font-size: 20px; line-height: 1; }
+    .tier-name  { font-family: var(--terminal); font-size: 20px; letter-spacing: 1px; }
+
+    /* Compare tiles */
+    .rank-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .rank-compare-tile {
+      background: rgba(0,0,0,.35);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      position: relative;
+    }
+    .rank-compare-tile.primary {
+      border-color: var(--green-dim);
+      background: rgba(57,211,83,.04);
+    }
+    .rank-compare-tile.primary::after {
+      content: '★';
+      position: absolute;
+      top: 5px; right: 8px;
+      font-size: 9px;
+      color: var(--green-dim);
+    }
+    .rct-label {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .rct-value {
+      font-family: var(--terminal);
+      font-size: 22px;
+      color: var(--green);
+      line-height: 1;
+      text-shadow: 0 0 8px rgba(57,211,83,.35);
+    }
+    .rct-base   { font-size: 9px; color: var(--muted); margin-top: 3px; }
+    .rct-caveat { font-size: 9px; color: var(--muted2); margin-top: 4px; line-height: 1.4; }
+
+    /* Tier progress bar */
+    .rank-bar-section { margin-bottom: 14px; }
+    .rank-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+    .rank-bar-track {
+      position: relative;
+      height: 5px;
+      background: var(--muted2);
+      border-radius: 4px;
+    }
+    .rank-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-dim) 0%, var(--green) 60%, var(--orange) 100%);
+      border-radius: 4px;
+      transition: width .7s cubic-bezier(.4,0,.2,1);
+    }
+    .rank-bar-dot {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 10px var(--orange);
+      border: 2px solid var(--bg);
+      transition: left .7s cubic-bezier(.4,0,.2,1);
+      z-index: 1;
+    }
+    .rank-ticks {
+      position: relative;
+      height: 16px;
+      margin-top: 4px;
+    }
+    .rank-tick       { position: absolute; top: 0; transform: translateX(-50%); width: 1px; height: 4px; background: var(--muted2); }
+    .rank-tick-emoji { position: absolute; top: 5px; transform: translateX(-50%); font-size: 9px; }
+
+    /* Stats list */
+    .rank-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+    .rank-stat {
+      background: rgba(0,0,0,.3);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .rank-stat-label {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .rank-stat-label::before { content: '· '; color: var(--green-dim); }
+    .rank-stat-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: right;
+    }
+    .rank-stat-value.orange { color: var(--orange); }
+    .rank-stat-value.green  { color: var(--green);  }
+
+    /* Methodology — collapsible */
+    .rank-meth-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .rank-meth-hint {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .05em;
+    }
+    .rank-meth-hint::before { content: '// '; color: var(--muted2); }
+    .rank-meth-btn {
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .06em;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .rank-meth-btn:hover { border-color: var(--green-dim); color: var(--green); }
+
+    .rank-meth-body {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .25s ease, margin-top .35s;
+      margin-top: 0;
+    }
+    .rank-meth-body.open {
+      max-height: 300px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+    .rank-meth-inner {
+      background: rgba(0,0,0,.25);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .rank-meth-row {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      margin-bottom: 5px;
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .rank-meth-row:last-child { margin-bottom: 0; }
+    .meth-key { white-space: nowrap; color: var(--text); font-weight: 700; flex-shrink: 0; }
+
+    /* ═══════════════════════════════════════════
+       TOGGLE
+    ═══════════════════════════════════════════ */
+    .toggle-wrap {
+      width: calc(100% - 40px);
+      max-width: 480px;
+      margin: 12px 20px 0;
+      display: flex;
+      gap: 8px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 9px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+      letter-spacing: .06em;
+    }
+    .toggle-btn:hover { border-color: var(--green-dim); color: var(--text); }
+    .toggle-btn.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #000;
+      box-shadow: 0 0 12px var(--glow-o);
+    }
+    .toggle-btn.active-both {
+      background: var(--orange-dim);
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    /* ═══════════════════════════════════════════
+       DATA TABLE
+    ═══════════════════════════════════════════ */
+    .table-card { padding: 0; overflow: hidden; }
+
+    .table-header {
+      display: grid;
+      grid-template-columns: 52px 1fr 1fr;
+      padding: 9px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border2);
+    }
+    .table-header.show-both { grid-template-columns: 44px 1fr 1fr 1fr; }
+    .th {
+      font-size: 9px;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-family: var(--mono);
+    }
+    .th:not(:first-child) { text-align: right; }
+
+    .table-row {
+      display: grid;
+      grid-template-columns: 52px 1fr 1fr;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+      animation: fadeIn .3s ease both;
+    }
+    .table-row.show-both { grid-template-columns: 44px 1fr 1fr 1fr; }
+    .table-row:last-child { border-bottom: none; }
+    .table-row:hover { background: rgba(57,211,83,.04); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .cell-pct {
+      font-family: var(--terminal);
+      font-size: 20px;
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+    }
+    .cell-btc {
+      text-align: right;
+      font-size: 11px;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .cell-btc .btc-amount { font-weight: 700; }
+    .cell-btc .btc-sub    { font-size: 9px; color: var(--muted); margin-top: 1px; }
+    .cell-fiat {
+      text-align: right;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .cell-fiat.eur { color: var(--blue); }
+    .cell-fiat.usd { color: var(--lime); }
+
+    .total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      background: rgba(247,147,26,.07);
+      border-top: 1px solid var(--orange-dim);
+    }
+    .total-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--orange);
+      font-weight: 700;
+    }
+    .total-label::before { content: '> '; color: var(--green-dim); }
+    .total-value {
+      font-family: var(--terminal);
+      font-size: 24px;
+      color: var(--orange);
+      text-shadow: 0 0 10px var(--glow-o);
+    }
+
+    /* ═══════════════════════════════════════════
+       MISC
+    ═══════════════════════════════════════════ */
+    .placeholder {
+      padding: 26px 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .06em;
+    }
+
+    /* Green blinking live dot */
+    .live-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-right: 5px;
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1; box-shadow:0 0 6px var(--green)} 50%{opacity:.3; box-shadow:none} }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-banner { width: calc(100% - 40px); max-width: 480px; margin: 10px 20px 0; display: none; }
+    .error-banner.visible { display: block; }
+    .error-inner {
+      background: rgba(232,68,90,.1);
+      border: 1px solid rgba(232,68,90,.4);
+      border-radius: 8px;
+      padding: 9px 13px;
+      font-size: 11px;
+      color: var(--down);
+    }
+
+    footer {
+      width: calc(100% - 40px);
+      max-width: 480px;
+      margin-top: 28px;
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+      letter-spacing: .04em;
+    }
+    footer span { color: var(--green-dim); }
+  </style>
+</head>
+<body>
+
+  <!-- ─── HEADER ─── -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-icon">₿</div>
+      <div>
+        <div class="logo-text">HODL TRACKER<span class="logo-cursor"></span></div>
+      </div>
+    </div>
+    <div class="subtitle">
+      <span class="live-dot"></span>LIVE PRICE &nbsp;·&nbsp; PORTFOLIO &nbsp;·&nbsp; GLOBAL RANKING
+    </div>
+  </header>
+
+  <!-- ─── TICKER ─── -->
+  <div class="ticker-bar">
+    <div class="ticker-left">
+      <div class="ticker-label">BTC / PREIS</div>
+      <div class="ticker-price" id="tickerPrice">——</div>
+    </div>
+    <div class="ticker-right">
+      <div class="ticker-change" id="tickerChange">—</div>
+      <div class="ticker-updated" id="tickerUpdated">wird geladen …</div>
+    </div>
+  </div>
+
+  <!-- ─── ERROR ─── -->
+  <div class="error-banner" id="errorBanner">
+    <div class="error-inner" id="errorMsg"></div>
+  </div>
+
+  <!-- ─── INPUT ─── -->
+  <div class="card">
+    <div class="input-label">Mein Bitcoin-Bestand eingeben</div>
+    <div class="input-row">
+      <input class="btc-input" id="btcInput" type="number"
+        step="0.00000001" min="0" placeholder="0.00000000" inputmode="decimal" />
+      <div class="input-unit">BTC</div>
+    </div>
+  </div>
+
+  <!-- ─── ★ RANKING CARD ─── -->
+  <div class="card rank-card" id="rankCard">
+
+    <div class="rank-placeholder" id="rankPlaceholder">
+      Bestand eingeben, um dein globales Ranking zu sehen
+    </div>
+
+    <div id="rankContent" style="display:none;">
+
+      <!-- Hero number + tier badge -->
+      <div class="rank-hero">
+        <div>
+          <div class="rank-hero-label">Geschätztes globales Inhaber-Ranking</div>
+          <div class="rank-hero-number" id="rankHeroNumber">—</div>
+          <div class="rank-hero-sub" id="rankHeroSub">der Inhaber</div>
+        </div>
+        <div class="tier-badge">
+          <span class="tier-emoji" id="tierEmoji">—</span>
+          <span class="tier-name"  id="tierName">—</span>
+        </div>
+      </div>
+
+      <!-- Compare: Holder vs. Addresses -->
+      <div class="rank-compare">
+        <div class="rank-compare-tile primary">
+          <div class="rct-label">★ Inhaber weltweit</div>
+          <div class="rct-value" id="rankHolderPct">—</div>
+          <div class="rct-base">von ~106 Mio.</div>
+          <div class="rct-caveat">inkl. Börsen-Kunden, ETF-Inhaber</div>
+        </div>
+        <div class="rank-compare-tile">
+          <div class="rct-label">On-Chain Adressen</div>
+          <div class="rct-value" id="rankAddrPct">—</div>
+          <div class="rct-base">von ~58,8 Mio.</div>
+          <div class="rct-caveat">nur selbst-verwahrte Adressen</div>
+        </div>
+      </div>
+
+      <!-- Tier bar -->
+      <div class="rank-bar-section">
+        <div class="rank-bar-labels">
+          <span>🦠 Plankton</span>
+          <span>🐋 Blauwal</span>
+        </div>
+        <div class="rank-bar-track">
+          <div class="rank-bar-fill" id="rankBarFill" style="width:0%"></div>
+          <div class="rank-bar-dot"  id="rankBarDot"  style="left:0%"></div>
+        </div>
+        <div class="rank-ticks" id="rankTicks"></div>
+      </div>
+
+      <!-- Stats list -->
+      <div class="rank-stats">
+        <div class="rank-stat">
+          <div class="rank-stat-label">Anteil am Umlauf</div>
+          <div class="rank-stat-value orange" id="statSupplyPct">—</div>
+        </div>
+        <div class="rank-stat">
+          <div class="rank-stat-label">Umlaufmenge (live)</div>
+          <div class="rank-stat-value" id="statSupply">—</div>
+        </div>
+        <div class="rank-stat">
+          <div class="rank-stat-label">Reichere Inhaber (est.)</div>
+          <div class="rank-stat-value green" id="statRicherHolders">—</div>
+        </div>
+        <div class="rank-stat">
+          <div class="rank-stat-label">Reichere Adressen</div>
+          <div class="rank-stat-value" id="statRicherAddr">—</div>
+        </div>
+      </div>
+
+      <!-- Methodology — collapsible -->
+      <div>
+        <div class="rank-meth-bar">
+          <span class="rank-meth-hint">Schätzung · log-lineare Interpolation</span>
+          <button class="rank-meth-btn" id="methBtn" onclick="toggleMeth()">wie berechnet? ›</button>
+        </div>
+        <div class="rank-meth-body" id="methBody">
+          <div class="rank-meth-inner">
+            <div class="rank-meth-row">
+              <span class="meth-key">★ Inhaber</span>
+              <span>~106 Mio. Gesamtschätzung (Chainalysis + Börsen-Konten). Börsen-Adressen repräsentieren Millionen von Kunden — diese werden hochgerechnet.</span>
+            </div>
+            <div class="rank-meth-row">
+              <span class="meth-key">Adressen</span>
+              <span>~58,8 Mio. on-chain Adressen mit Guthaben (BitInfoCharts, Apr 2025). Mehrere Adressen pro Person möglich.</span>
+            </div>
+            <div class="rank-meth-row">
+              <span class="meth-key">Methode</span>
+              <span>Log-lineare Interpolation zwischen verifizierten Datenpunkten. Beide Werte sind Schätzungen.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── TOGGLE ─── -->
+  <div class="toggle-wrap">
+    <button class="toggle-btn active" id="btnEUR"  onclick="setCurrency('EUR')">€ EURO</button>
+    <button class="toggle-btn"        id="btnUSD"  onclick="setCurrency('USD')">$ DOLLAR</button>
+    <button class="toggle-btn"        id="btnBOTH" onclick="setCurrency('BOTH')">BEIDE</button>
+  </div>
+
+  <!-- ─── TABLE ─── -->
+  <div class="card table-card">
+    <div class="table-header" id="tableHeader">
+      <div class="th">%</div>
+      <div class="th">BTC</div>
+      <div class="th" id="thFiat">EUR</div>
+    </div>
+    <div class="table-body" id="tableBody">
+      <div class="placeholder">
+        <span class="live-dot"></span>Bestand eingeben …
+      </div>
+    </div>
+    <div class="total-row" id="totalRow" style="display:none;">
+      <div class="total-label">Gesamtwert</div>
+      <div class="total-value" id="totalValue">—</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>//</span> Preise: CoinGecko API (Fallback: Binance)
+    &nbsp;·&nbsp; Ranking: BitInfoCharts + Chainalysis <span>//</span><br>
+    Keine Anlageberatung &nbsp;·&nbsp; Nur zur Information
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT — identische Logik, nur Styles geändert
+  ═══════════════════════════════════════════ -->
+  <script>
+    const CONFIG = {
+      percentages:     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      refreshInterval: 30_000,
+      fiatDecimals:    2,
+      btcDecimals:     8,
+
+      apis: {
+        coingecko:
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur,usd&include_24hr_change=true',
+        coingeckoMarkets:
+          'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_desc&per_page=1&page=1',
+        binance:
+          'https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT',
+      },
+
+      // On-Chain Adress-Verteilung (BitInfoCharts, April 2025)
+      addrDistribution: [
+        { btc: 0,       cumPct: 100       },
+        { btc: 0.00001, cumPct: 87.24     },
+        { btc: 0.0001,  cumPct: 65.99     },
+        { btc: 0.001,   cumPct: 42.13     },
+        { btc: 0.01,    cumPct: 21.68     },
+        { btc: 0.1,     cumPct: 7.63      },
+        { btc: 1,       cumPct: 1.66      },
+        { btc: 10,      cumPct: 0.26      },
+        { btc: 100,     cumPct: 0.034     },
+        { btc: 1000,    cumPct: 0.0034    },
+        { btc: 10000,   cumPct: 0.000148  },
+        { btc: 100000,  cumPct: 0.0000068 },
+      ],
+      totalAddresses: 58_800_000,
+
+      // Hochgerechnete echte Inhaber (~106 Mio. Basis)
+      holderDistribution: [
+        { btc: 0,       cumPct: 100      },
+        { btc: 0.00001, cumPct: 81.4     },
+        { btc: 0.0001,  cumPct: 57.4     },
+        { btc: 0.001,   cumPct: 30.0     },
+        { btc: 0.01,    cumPct: 14.4     },
+        { btc: 0.1,     cumPct: 4.72     },
+        { btc: 1,       cumPct: 1.04     },
+        { btc: 10,      cumPct: 0.163    },
+        { btc: 100,     cumPct: 0.021    },
+        { btc: 1000,    cumPct: 0.002    },
+        { btc: 10000,   cumPct: 0.000082 },
+        { btc: 100000,  cumPct: 0.0000038},
+      ],
+      totalHolders: 106_000_000,
+
+      tiers: [
+        { minBtc: 0,      emoji: '🦠', name: 'Plankton', color: '#4e6b46' },
+        { minBtc: 0.001,  emoji: '🦐', name: 'Garnele',  color: '#7dd4f7' },
+        { minBtc: 0.01,   emoji: '🦀', name: 'Krabbe',   color: '#f7d07a' },
+        { minBtc: 0.1,    emoji: '🐟', name: 'Fisch',    color: '#7edf9a' },
+        { minBtc: 1,      emoji: '🐬', name: 'Delfin',   color: '#7dd4f7' },
+        { minBtc: 10,     emoji: '🐙', name: 'Oktopus',  color: '#c87ef7' },
+        { minBtc: 100,    emoji: '🐳', name: 'Wal',      color: '#f7931a' },
+        { minBtc: 1000,   emoji: '🦈', name: 'Hai',      color: '#ff6b6b' },
+        { minBtc: 10000,  emoji: '🐋', name: 'Blauwal',  color: '#ff4444' },
+      ],
+    };
+
+    const state = {
+      priceEUR: null, priceUSD: null, change24h: null,
+      circulatingSupply: null, btcHolding: 0,
+      currency: 'EUR', lastUpdated: null,
+    };
+
+    /* ── Rankings ── */
+    const Rankings = {
+      _interp(dist, btc) {
+        if (!btc || btc <= 0) return null;
+        if (btc >= dist[dist.length-1].btc) return dist[dist.length-1].cumPct;
+        for (let i = 0; i < dist.length-1; i++) {
+          const lo = dist[i], hi = dist[i+1];
+          if (btc >= lo.btc && btc < hi.btc) {
+            const t = (Math.log10(btc) - Math.log10(lo.btc > 0 ? lo.btc : 1e-12))
+                    / (Math.log10(hi.btc) - Math.log10(lo.btc > 0 ? lo.btc : 1e-12));
+            return lo.cumPct + t * (hi.cumPct - lo.cumPct);
+          }
+        }
+        return dist[dist.length-1].cumPct;
+      },
+      getHolderPct(btc) { return this._interp(CONFIG.holderDistribution, btc); },
+      getAddrPct(btc)   { return this._interp(CONFIG.addrDistribution,   btc); },
+      getTier(btc) {
+        const t = CONFIG.tiers;
+        for (let i = t.length-1; i >= 0; i--) if (btc >= t[i].minBtc) return t[i];
+        return t[0];
+      },
+      getSupplyShare(btc, supply) {
+        if (!supply || !btc) return null;
+        const p = (btc / supply) * 100;
+        if (p >= 1)     return p.toFixed(4)     + ' %';
+        if (p >= 0.001) return p.toFixed(6)     + ' %';
+        if (p >= 1e-6)  return p.toFixed(8)     + ' %';
+        return p.toExponential(4) + ' %';
+      },
+      barPos(btc) {
+        const mn = Math.log10(1e-6), mx = Math.log10(100_000);
+        return Math.min(100, Math.max(0, ((Math.log10(Math.max(btc,1e-6))-mn)/(mx-mn))*100));
+      },
+    };
+
+    /* ── API ── */
+    const API = {
+      async fetchPrice() {
+        try { return await this._cg(); }
+        catch(e) { console.warn('CoinGecko fail, Binance fallback', e.message); return await this._bn(); }
+      },
+      async _cg() {
+        const [p,m] = await Promise.all([fetch(CONFIG.apis.coingecko), fetch(CONFIG.apis.coingeckoMarkets)]);
+        if (!p.ok) throw new Error(`CG ${p.status}`);
+        const pd = await p.json(), md = m.ok ? await m.json() : [];
+        return { priceEUR: pd.bitcoin.eur, priceUSD: pd.bitcoin.usd,
+                 change24h: pd.bitcoin.usd_24h_change, circulatingSupply: md[0]?.circulating_supply ?? null };
+      },
+      async _bn() {
+        const r = await fetch(CONFIG.apis.binance); if (!r.ok) throw new Error(`BN ${r.status}`);
+        const d = await r.json(), usd = parseFloat(d.lastPrice), rate = await this._eur();
+        return { priceUSD: usd, priceEUR: usd/rate, change24h: parseFloat(d.priceChangePercent), circulatingSupply: null };
+      },
+      async _eur() {
+        try { return parseFloat((await (await fetch('https://api.binance.com/api/v3/ticker/price?symbol=EURUSDT')).json()).price); }
+        catch { return 1.08; }
+      },
+    };
+
+    /* ── Formatter ── */
+    const Fmt = {
+      fiat(v, c) {
+        return new Intl.NumberFormat('de-DE', { style:'currency', currency:c,
+          minimumFractionDigits:2, maximumFractionDigits:2 }).format(v);
+      },
+      btc(v)  { return v.toLocaleString('de-DE', { minimumFractionDigits:8, maximumFractionDigits:8 }); },
+      num(v)  { return v.toLocaleString('de-DE'); },
+      time(d) { return d.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit', second:'2-digit' }); },
+      pct(v) {
+        if (v === null) return '—';
+        const s = v < 0.0001 ? v.toExponential(2)+' %'
+                : v < 0.001  ? v.toFixed(5)+' %'
+                : v < 0.01   ? v.toFixed(4)+' %'
+                : v < 0.1    ? v.toFixed(3)+' %'
+                : v < 1      ? v.toFixed(2)+' %'
+                :               v.toFixed(1)+' %';
+        return 'Top ' + s;
+      },
+      pctHero(v) {
+        if (v === null) return '—';
+        return v < 0.001 ? v.toExponential(1)+' %'
+             : v < 0.01  ? v.toFixed(4)+' %'
+             : v < 1     ? v.toFixed(2)+' %'
+             :              v.toFixed(1)+' %';
+      },
+    };
+
+    /* ── UI ── */
+    const UI = {
+      updateTicker() {
+        const { priceEUR, priceUSD, change24h, currency, lastUpdated } = state;
+        if (!priceEUR) return;
+        const price = currency === 'USD' ? priceUSD : priceEUR;
+        const cur   = currency === 'USD' ? 'USD' : 'EUR';
+        const up    = change24h >= 0;
+        document.getElementById('tickerPrice').textContent = Fmt.fiat(price, cur);
+        const ch = document.getElementById('tickerChange');
+        ch.textContent = `${up?'▲':'▼'} ${Math.abs(change24h).toFixed(2)} %`;
+        ch.className   = `ticker-change ${up?'up':'down'}`;
+        document.getElementById('tickerUpdated').innerHTML =
+          `<span class="live-dot"></span>ZULETZT ${Fmt.time(lastUpdated)}`;
+      },
+
+      renderRanking() {
+        const { btcHolding, circulatingSupply } = state;
+        const ph = document.getElementById('rankPlaceholder');
+        const rc = document.getElementById('rankContent');
+        if (!btcHolding || btcHolding <= 0) {
+          ph.style.display = 'block'; rc.style.display = 'none'; return;
+        }
+        ph.style.display = 'none'; rc.style.display = 'block';
+
+        const holderPct = Rankings.getHolderPct(btcHolding);
+        const addrPct   = Rankings.getAddrPct(btcHolding);
+        const tier      = Rankings.getTier(btcHolding);
+        const barPos    = Rankings.barPos(btcHolding);
+        const supply    = circulatingSupply ?? 19_870_000;
+        const supShare  = Rankings.getSupplyShare(btcHolding, supply);
+
+        document.getElementById('rankHeroNumber').textContent = Fmt.pctHero(holderPct);
+        document.getElementById('rankHeroSub').innerHTML =
+          `aller geschätzten Bitcoin-Inhaber <strong>(~106 Mio.)</strong>`;
+
+        document.getElementById('rankHolderPct').textContent = Fmt.pct(holderPct);
+        document.getElementById('rankAddrPct').textContent   = Fmt.pct(addrPct);
+
+        document.getElementById('tierEmoji').textContent = tier.emoji;
+        document.getElementById('tierName').textContent  = tier.name;
+        document.getElementById('tierName').style.color  = tier.color;
+
+        document.getElementById('rankBarFill').style.width = barPos + '%';
+        document.getElementById('rankBarDot').style.left   = barPos + '%';
+
+        const ticksEl = document.getElementById('rankTicks');
+        if (!ticksEl.dataset.drawn) {
+          ticksEl.dataset.drawn = '1';
+          const mn = Math.log10(1e-6), mx = Math.log10(100_000);
+          CONFIG.tiers.forEach(t => {
+            if (!t.minBtc) return;
+            const pos = ((Math.log10(t.minBtc)-mn)/(mx-mn))*100;
+            const tick = document.createElement('div');
+            tick.className = 'rank-tick'; tick.style.left = pos+'%';
+            ticksEl.appendChild(tick);
+            const lbl = document.createElement('div');
+            lbl.className = 'rank-tick-emoji'; lbl.style.left = pos+'%';
+            lbl.textContent = t.emoji; ticksEl.appendChild(lbl);
+          });
+        }
+
+        document.getElementById('statSupplyPct').textContent  = supShare ?? '—';
+        document.getElementById('statSupply').textContent     = Fmt.num(Math.round(supply)) + ' BTC';
+
+        const rH = Math.round((holderPct/100) * CONFIG.totalHolders);
+        document.getElementById('statRicherHolders').textContent =
+          '~' + Fmt.num(rH < 1000 ? rH : Math.round(rH/1000)*1000);
+        const rA = Math.round((addrPct/100) * CONFIG.totalAddresses);
+        document.getElementById('statRicherAddr').textContent =
+          '~' + Fmt.num(rA < 1000 ? rA : Math.round(rA/1000)*1000);
+      },
+
+      renderTable() {
+        const { btcHolding, priceEUR, priceUSD, currency } = state;
+        const body = document.getElementById('tableBody');
+        const header = document.getElementById('tableHeader');
+        const thFiat = document.getElementById('thFiat');
+        const totalRow = document.getElementById('totalRow');
+        const showBoth = currency === 'BOTH';
+
+        if (!btcHolding || !priceEUR) {
+          body.innerHTML = `<div class="placeholder">${!priceEUR
+            ? '<span class="loading-spinner"></span>PREIS WIRD GELADEN …'
+            : '<span class="live-dot"></span>BESTAND EINGEBEN …'}</div>`;
+          totalRow.style.display = 'none'; return;
+        }
+
+        header.className   = `table-header${showBoth?' show-both':''}`;
+        thFiat.textContent = showBoth ? 'EUR' : currency;
+
+        if (showBoth && !document.getElementById('thUSD')) {
+          const ex = Object.assign(document.createElement('div'),
+            { className:'th', id:'thUSD', textContent:'USD' });
+          ex.style.textAlign = 'right';
+          header.appendChild(ex);
+        } else if (!showBoth) { document.getElementById('thUSD')?.remove(); }
+
+        body.innerHTML = CONFIG.percentages.map((pct, i) => {
+          const btcAmt = (btcHolding * pct) / 100;
+          const eur    = btcAmt * priceEUR;
+          const usd    = btcAmt * priceUSD;
+          const cls    = `table-row${showBoth?' show-both':''}`;
+          const fiat   = showBoth
+            ? `<div class="cell-fiat eur">${Fmt.fiat(eur,'EUR')}</div><div class="cell-fiat usd">${Fmt.fiat(usd,'USD')}</div>`
+            : `<div class="cell-fiat">${Fmt.fiat(currency==='USD'?usd:eur,currency==='USD'?'USD':'EUR')}</div>`;
+          return `<div class="${cls}" style="animation-delay:${i*.04}s">
+            <div class="cell-pct">${pct}%</div>
+            <div class="cell-btc">
+              <span class="btc-amount">${Fmt.btc(btcAmt)}</span>
+              <span class="btc-sub">BTC</span>
+            </div>${fiat}</div>`;
+        }).join('');
+
+        const tE = btcHolding * priceEUR, tU = btcHolding * priceUSD;
+        document.getElementById('totalValue').textContent = showBoth
+          ? `${Fmt.fiat(tE,'EUR')} / ${Fmt.fiat(tU,'USD')}`
+          : Fmt.fiat(currency==='USD'?tU:tE, currency==='USD'?'USD':'EUR');
+        totalRow.style.display = 'flex';
+      },
+
+      showError(msg) {
+        document.getElementById('errorMsg').textContent = '⚠ ' + msg;
+        document.getElementById('errorBanner').classList.add('visible');
+      },
+      hideError() { document.getElementById('errorBanner').classList.remove('visible'); },
+      updateToggle() {
+        ['EUR','USD','BOTH'].forEach(c => {
+          document.getElementById(`btn${c}`).className =
+            'toggle-btn' + (state.currency===c ? (c==='BOTH'?' active-both':' active') : '');
+        });
+      },
+    };
+
+    /* ── App ── */
+    const App = {
+      async init() {
+        // localStorage: Bestand beim Laden wiederherstellen
+        const saved = localStorage.getItem('hodl_btc');
+        if (saved) {
+          document.getElementById('btcInput').value = saved;
+          state.btcHolding = parseFloat(saved) || 0;
+        }
+
+        document.getElementById('btcInput').addEventListener('input', e => {
+          state.btcHolding = parseFloat(e.target.value) || 0;
+          localStorage.setItem('hodl_btc', e.target.value);
+          UI.renderRanking();
+          UI.renderTable();
+        });
+
+        await this.refresh();
+        setInterval(() => this.refresh(), CONFIG.refreshInterval);
+      },
+
+      async refresh() {
+        try {
+          const d = await API.fetchPrice();
+          Object.assign(state, {
+            priceEUR: d.priceEUR, priceUSD: d.priceUSD,
+            change24h: d.change24h, lastUpdated: new Date(),
+            ...(d.circulatingSupply ? { circulatingSupply: d.circulatingSupply } : {}),
+          });
+          UI.hideError(); UI.updateTicker(); UI.renderRanking(); UI.renderTable();
+        } catch(err) { UI.showError(`PREISABRUF FEHLER: ${err.message}`); }
+      },
+    };
+
+    function toggleMeth() {
+      const body = document.getElementById('methBody');
+      const btn  = document.getElementById('methBtn');
+      const open = body.classList.toggle('open');
+      btn.textContent = open ? 'schließen ✕' : 'wie berechnet? ›';
+    }
+
+    function setCurrency(c) {
+      state.currency = c;
+      UI.updateToggle(); UI.updateTicker(); UI.renderTable();
+    }
+
+    App.init();
+  </script>
+</body>
+</html>
