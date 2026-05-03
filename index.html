@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-  <head>
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>HODL Tracker</title>
@@ -18,127 +18,159 @@
        DESIGN TOKENS — Retro Terminal × Bitcoin
     ═══════════════════════════════════════════ */
     :root {
-      /* Backgrounds — near-black with a green tint */
-      --bg:        #080c06;
-      --surface:   #0d1509;
-      --surface2:  #111d0c;
-      --surface3:  #162110;
+      --bg:        #060a05;
+      --surface:   #0b1308;
+      --surface2:  #0f1a0b;
+      --surface3:  #14200f;
 
-      /* Borders & Glows */
-      --border:    #1d2e16;
-      --border2:   #253d1c;
-      --glow-g:    rgba(57, 211, 83,  .13);
-      --glow-o:    rgba(247,147, 26,  .14);
+      --border:    #1a2914;
+      --border2:   #22361a;
+      --glow-g:    rgba(57,211,83,.10);
+      --glow-o:    rgba(247,147,26,.12);
 
-      /* Accent — Bitcoin Orange (prices, key numbers) */
       --orange:    #f7931a;
-      --orange-dim:#7a4a0d;
+      --orange-dim:#6b3e0a;
 
-      /* Accent — Terminal Green (labels, UI, indicators) */
-      --green:     #39d353;
-      --green-dim: #1c6b2c;
-      --green-pale:#c6eec0;
+      --green:     #3dd658;
+      --green-dim: #1a5e28;
+      --green-pale:#c8efcc;
 
-      /* Text */
-      --text:      #cce8c4;   /* slightly green-tinted white — very readable */
-      --muted:     #4e6b46;
-      --muted2:    #324429;
+      --text:      #c8e6c0;
+      --muted:     #4a6642;
+      --muted2:    #2e3f28;
 
-      /* Status */
-      --up:        #39d353;
+      --up:        #3dd658;
       --down:      #e8445a;
       --blue:      #7dd4f7;
       --lime:      #b8f77e;
 
-      /* Typography */
-      --terminal:  'VT323', monospace;      /* retro pixel — only for big display */
-      --mono:      'Space Mono', monospace; /* readable data font               */
-
-      --radius:    10px;
+      --terminal:  'VT323', monospace;
+      --mono:      'Space Mono', monospace;
+      --radius:    12px;
+      --radius-sm: 8px;
     }
 
-    /* ═══════════════════════════════════════════
-       RESET & BASE
-    ═══════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--bg);
-      /* Subtle green scanline texture across the whole page */
-      background-image: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0,20,0,.08) 3px,
-        rgba(0,20,0,.08) 4px
-      );
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0,18,0,.06) 2px,
+          rgba(0,18,0,.06) 3px
+        );
       color: var(--text);
       font-family: var(--mono);
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0 0 52px;
+      padding: 0 0 60px;
     }
 
-    /* Shared card */
+    /* ── Shared card ── */
     .card {
-      width: calc(100% - 40px);
-      max-width: 480px;
-      margin: 12px 20px 0;
-      padding: 18px;
+      width: calc(100% - 32px);
+      max-width: 488px;
+      margin: 10px 16px 0;
+      padding: 20px;
       background: var(--surface);
       border: 1px solid var(--border2);
       border-radius: var(--radius);
-      /* Green inner glow */
-      box-shadow: inset 0 0 20px var(--glow-g), 0 2px 12px rgba(0,0,0,.5);
+      box-shadow: inset 0 0 24px var(--glow-g), 0 4px 16px rgba(0,0,0,.55);
+      position: relative;
     }
 
     /* ═══════════════════════════════════════════
-       HEADER — Terminal Hero
+       HEADER
     ═══════════════════════════════════════════ */
     header {
       width: 100%;
-      max-width: 480px;
-      padding: 28px 20px 0;
+      max-width: 520px;
+      padding: 32px 20px 20px;
+      position: relative;
+      /* Subtle grid behind header */
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 32px 32px;
+      background-position: center center;
+      border-bottom: 1px solid var(--border2);
+      margin-bottom: 4px;
     }
+    header::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, var(--bg) 100%);
+      pointer-events: none;
+    }
+
+    /* ── Sprach-Toggle ── */
+    .lang-toggle {
+      position: absolute;
+      top: 32px;
+      right: 20px;
+      z-index: 2;
+      display: flex;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .lang-btn {
+      padding: 5px 10px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .lang-btn.active { background: var(--orange); color: #000; }
+    .lang-btn:not(.active):hover { color: var(--text); }
 
     .logo-wrap {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
     }
 
-    /* Bitcoin ₿ icon — orange circle */
     .logo-icon {
-      width: 36px; height: 36px;
+      width: 42px; height: 42px;
       border-radius: 50%;
-      background: var(--orange);
+      background: linear-gradient(135deg, #f7931a 0%, #e07b10 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--terminal);
-      font-size: 24px;
+      font-size: 26px;
       color: #000;
-      box-shadow: 0 0 14px var(--glow-o);
+      box-shadow: 0 0 20px rgba(247,147,26,.5), 0 2px 8px rgba(0,0,0,.4);
       flex-shrink: 0;
     }
 
     .logo-text {
       font-family: var(--terminal);
-      font-size: 38px;
+      font-size: 44px;
       line-height: 1;
       color: var(--green);
-      /* Terminal phosphor glow */
-      text-shadow: 0 0 12px rgba(57,211,83,.6), 0 0 30px rgba(57,211,83,.2);
-      letter-spacing: 2px;
+      text-shadow: 0 0 16px rgba(61,214,88,.7), 0 0 40px rgba(61,214,88,.2);
+      letter-spacing: 3px;
     }
 
-    /* Blinking cursor after logo */
     .logo-cursor {
       display: inline-block;
       width: 3px;
-      height: 28px;
+      height: 32px;
       background: var(--green);
       margin-left: 4px;
       vertical-align: middle;
@@ -148,72 +180,133 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
     .subtitle {
-      font-size: 10px;
+      font-size: 9px;
       color: var(--muted);
-      letter-spacing: .12em;
+      letter-spacing: .16em;
       text-transform: uppercase;
-      margin-top: 6px;
+      margin-top: 8px;
       font-family: var(--mono);
+      position: relative;
+      z-index: 1;
     }
 
     /* ═══════════════════════════════════════════
-       TICKER BAR — BTC Price
+       TICKER BAR — BTC Price Hero
     ═══════════════════════════════════════════ */
     .ticker-bar {
-      width: calc(100% - 40px);
-      max-width: 480px;
-      margin: 16px 20px 0;
-      padding: 14px 18px;
-      background: var(--surface);
+      width: calc(100% - 32px);
+      max-width: 488px;
+      margin: 12px 16px 0;
+      padding: 20px 22px 18px;
+      background: linear-gradient(160deg, #0f1a09 0%, #0b1208 100%);
       border: 1px solid var(--border2);
+      border-top: 3px solid var(--orange);
       border-radius: var(--radius);
-      box-shadow: inset 0 0 16px var(--glow-o), 0 2px 12px rgba(0,0,0,.4);
+      box-shadow:
+        inset 0 0 32px rgba(247,147,26,.07),
+        0 0 0 1px rgba(247,147,26,.06),
+        0 4px 20px rgba(0,0,0,.6);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .ticker-left {}
     .ticker-label {
+      font-family: var(--mono);
       font-size: 9px;
       color: var(--muted);
-      letter-spacing: .12em;
+      letter-spacing: .16em;
       text-transform: uppercase;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
     .ticker-price {
       font-family: var(--terminal);
-      font-size: 42px;
+      font-size: 62px;
       line-height: 1;
       color: var(--orange);
-      text-shadow: 0 0 14px rgba(247,147,26,.5);
+      text-shadow: 0 0 28px rgba(247,147,26,.65), 0 0 60px rgba(247,147,26,.2);
       letter-spacing: 1px;
     }
+
+    @keyframes priceUp {
+      0%   { color: var(--orange); text-shadow: 0 0 28px rgba(247,147,26,.65); }
+      30%  { color: #3dd658; text-shadow: 0 0 50px rgba(61,214,88,1), 0 0 100px rgba(61,214,88,.4); }
+      100% { color: var(--orange); text-shadow: 0 0 28px rgba(247,147,26,.65); }
+    }
+    @keyframes priceDown {
+      0%   { color: var(--orange); text-shadow: 0 0 28px rgba(247,147,26,.65); }
+      30%  { color: #e8445a; text-shadow: 0 0 50px rgba(232,68,90,1), 0 0 100px rgba(232,68,90,.4); }
+      100% { color: var(--orange); text-shadow: 0 0 28px rgba(247,147,26,.65); }
+    }
+    .ticker-price.flash-up   { animation: priceUp   1s ease forwards; }
+    .ticker-price.flash-down { animation: priceDown 1s ease forwards; }
 
     .ticker-right {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 5px;
+      gap: 6px;
     }
     .ticker-change {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 5px;
       font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: .04em;
     }
-    .ticker-change.up   { background: rgba(57,211,83,.12);  border: 1px solid var(--green-dim); color: var(--up);   }
-    .ticker-change.down { background: rgba(232,68,90,.12);   border: 1px solid #5a1c27;          color: var(--down); }
+    .ticker-change.up   {
+      background: rgba(61,214,88,.12);
+      border: 1px solid rgba(61,214,88,.3);
+      color: var(--up);
+      text-shadow: 0 0 8px rgba(61,214,88,.4);
+    }
+    .ticker-change.down {
+      background: rgba(232,68,90,.12);
+      border: 1px solid rgba(232,68,90,.3);
+      color: var(--down);
+    }
     .ticker-updated {
+      font-family: var(--mono);
       font-size: 9px;
       color: var(--muted);
       letter-spacing: .05em;
     }
 
-    /* ═══════════════════════════════════════════
-       INPUT
-    ═══════════════════════════════════════════ */
+    /* ── Portfolio-Wert Anzeige ── */
+    .portfolio-value-bar {
+      width: calc(100% - 32px);
+      max-width: 488px;
+      margin: 10px 16px 0;
+      padding: 16px 22px;
+      background: linear-gradient(160deg, #0c1a09 0%, #0a1207 100%);
+      border: 1px solid var(--border2);
+      border-top: 2px solid var(--green-dim);
+      border-radius: var(--radius);
+      box-shadow: inset 0 0 24px rgba(61,214,88,.06), 0 4px 16px rgba(0,0,0,.5);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pv-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .pv-label::before { content: '> '; color: var(--green-dim); }
+    .pv-value {
+      font-family: var(--terminal);
+      font-size: 34px;
+      line-height: 1;
+      color: var(--green);
+      text-shadow: 0 0 16px rgba(61,214,88,.5);
+      letter-spacing: 1px;
+    }
+    .pv-value.empty { color: var(--muted2); font-size: 22px; }
+
+    /* ── Input ── */
     .input-label {
       font-size: 9px;
       color: var(--green);
@@ -310,20 +403,65 @@
     }
     .rank-placeholder::before { content: '_ '; color: var(--green); animation: blink 1s step-end infinite; }
 
-    /* Tier badge */
+    /* Tier badge — voller visueller Moment */
     .tier-badge {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 7px;
-      background: rgba(0,0,0,.4);
+      gap: 4px;
+      background: rgba(0,0,0,.5);
       border: 1px solid var(--border2);
-      border-radius: 20px;
-      padding: 6px 12px 6px 8px;
-      margin-top: 3px;
+      border-radius: 14px;
+      padding: 10px 16px 8px;
+      margin-top: 0;
       white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      min-width: 80px;
+      text-align: center;
     }
-    .tier-emoji { font-size: 20px; line-height: 1; }
-    .tier-name  { font-family: var(--terminal); font-size: 20px; letter-spacing: 1px; }
+    /* Shimmer Sweep über den Badge */
+    .tier-badge::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg,
+        transparent 30%,
+        rgba(255,255,255,.07) 50%,
+        transparent 70%);
+      background-size: 200% 100%;
+      animation: tierShimmer 3s ease-in-out infinite;
+    }
+    @keyframes tierShimmer {
+      0%   { background-position: 200% center; }
+      60%  { background-position: -200% center; }
+      100% { background-position: -200% center; }
+    }
+    .tier-emoji {
+      font-size: 34px;
+      line-height: 1;
+      filter: drop-shadow(0 0 8px rgba(247,147,26,.5));
+      animation: tierFloat 4s ease-in-out infinite;
+    }
+    @keyframes tierFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-3px); }
+    }
+    .tier-name {
+      font-family: var(--terminal);
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--orange);
+      text-shadow: 0 0 8px rgba(247,147,26,.5);
+      text-transform: uppercase;
+    }
+    /* Einblend-Animation wenn Tier sich ändert */
+    @keyframes tierReveal {
+      0%   { opacity: 0; transform: scale(.85); }
+      60%  { opacity: 1; transform: scale(1.06); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .tier-badge.reveal { animation: tierReveal .5s cubic-bezier(.34,1.56,.64,1) forwards; }
 
     /* Compare tiles */
     .rank-compare {
@@ -506,12 +644,24 @@
     /* ═══════════════════════════════════════════
        TOGGLE
     ═══════════════════════════════════════════ */
+    .error-banner { width: calc(100% - 32px); max-width: 488px; margin: 10px 16px 0; display: none; }
+    .error-banner.visible { display: block; }
+    .error-inner {
+      background: rgba(232,68,90,.08);
+      border: 1px solid rgba(232,68,90,.35);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--down);
+    }
+
     .toggle-wrap {
-      width: calc(100% - 40px);
-      max-width: 480px;
-      margin: 12px 20px 0;
+      width: calc(100% - 32px);
+      max-width: 488px;
+      margin: 10px 16px 0;
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
     .toggle-btn {
       flex: 1;
@@ -633,10 +783,26 @@
     /* ═══════════════════════════════════════════
        MISC
     ═══════════════════════════════════════════ */
+    footer {
+      width: 100%;
+      max-width: 520px;
+      margin-top: 32px;
+      padding: 20px 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted2);
+      letter-spacing: .08em;
+      line-height: 1.8;
+    }
+    footer span { color: var(--green-dim); }
+
     .placeholder {
-      padding: 26px 16px;
+      padding: 28px 16px;
       text-align: center;
       color: var(--muted);
+      font-family: var(--mono);
       font-size: 11px;
       letter-spacing: .06em;
     }
@@ -665,15 +831,287 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .error-banner { width: calc(100% - 40px); max-width: 480px; margin: 10px 20px 0; display: none; }
+    .error-banner { width: calc(100% - 32px); max-width: 488px; margin: 10px 16px 0; display: none; }
     .error-banner.visible { display: block; }
     .error-inner {
-      background: rgba(232,68,90,.1);
-      border: 1px solid rgba(232,68,90,.4);
-      border-radius: 8px;
-      padding: 9px 13px;
+      background: rgba(232,68,90,.08);
+      border: 1px solid rgba(232,68,90,.35);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: var(--mono);
       font-size: 11px;
       color: var(--down);
+    }
+
+    /* ═══════════════════════════════════════════
+       MICRO-ANIMATIONS
+    ═══════════════════════════════════════════ */
+
+    /* Karten-Einblend beim Seitenwechsel */
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page.active .card,
+    .page.active .dash-card,
+    .page.active .ticker-bar,
+    .page.active .portfolio-value-bar,
+    .page.active .nav-bar + * {
+      animation: cardIn .35s ease both;
+    }
+    /* Verzögerung für jede Karte — 1. bis 6. */
+    .page.active .card:nth-child(1), .page.active .dash-card:nth-child(1) { animation-delay: .04s; }
+    .page.active .card:nth-child(2), .page.active .dash-card:nth-child(2) { animation-delay: .09s; }
+    .page.active .card:nth-child(3), .page.active .dash-card:nth-child(3) { animation-delay: .14s; }
+    .page.active .card:nth-child(4), .page.active .dash-card:nth-child(4) { animation-delay: .19s; }
+    .page.active .card:nth-child(5), .page.active .dash-card:nth-child(5) { animation-delay: .24s; }
+    .page.active .card:nth-child(6), .page.active .dash-card:nth-child(6) { animation-delay: .29s; }
+
+    /* Zahl-CountUp (Keyframe-Basis, JS steuert den Wert) */
+    @keyframes numFlash {
+      0%   { opacity: .4; }
+      50%  { opacity: 1; }
+      100% { opacity: 1; }
+    }
+    .num-update { animation: numFlash .4s ease; }
+
+    /* Halving-Countdown Einblend */
+    @keyframes halvingIn {
+      from { opacity: 0; transform: scale(.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    #halvingDays { animation: halvingIn .6s cubic-bezier(.34,1.56,.64,1) both; }
+
+    /* Live-Dot Puls */
+    @keyframes liveDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .5; transform: scale(1.5); }
+    }
+    .live-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 5px var(--green);
+      margin-right: 5px;
+      vertical-align: middle;
+      animation: liveDot 1.8s ease-in-out infinite;
+    }
+
+    /* Dashboard-Wert Einblend wenn geladen */
+    @keyframes valueIn {
+      from { opacity: 0; transform: translateX(-6px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .dash-value:not(:empty) { animation: valueIn .3s ease both; }
+    .nav-bar {
+      width: 100%;
+      max-width: 520px;
+      margin: 8px 0 0;
+      display: flex;
+      gap: 0;
+      background: var(--surface2);
+      border-bottom: 2px solid var(--orange-dim);
+      position: relative;
+    }
+    .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 10%; right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--orange), transparent);
+      filter: blur(4px);
+      opacity: .7;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 14px 4px;
+      border: none;
+      border-right: 1px solid var(--border2);
+      background: transparent;
+      color: #4a6642;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-btn:last-child { border-right: none; }
+    .nav-btn:hover { background: rgba(247,147,26,.06); color: #c8e6c0; }
+
+    .nav-btn-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      line-height: 1;
+      color: inherit;
+    }
+
+    .nav-btn.active {
+      background: rgba(247,147,26,.10);
+      color: #f7931a;
+      box-shadow: inset 0 3px 0 #f7931a;
+      text-shadow: 0 0 16px rgba(247,147,26,.65);
+    }
+    .nav-btn.active .nav-btn-label {
+      color: #f7931a;
+    }
+
+    .page { display: none; width: 100%; flex-direction: column; align-items: center; }
+    .page.active { display: flex; }
+
+    /* ── Dashboard Cards — Monitoring Panel ── */
+    .dash-card {
+      width: calc(100% - 32px);
+      max-width: 488px;
+      margin: 10px 16px 0;
+      padding: 20px 22px;
+      background: #060d05;
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--green-dim);
+      border-radius: var(--radius);
+      box-shadow: inset 0 0 30px rgba(61,214,88,.04), 0 4px 16px rgba(0,0,0,.6);
+      position: relative;
+      overflow: hidden;
+    }
+    /* Subtile Raster-Textur */
+    .dash-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(61,214,88,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(61,214,88,.025) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+    .dash-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .dash-label::before { content: '// '; color: var(--green-dim); }
+    .dash-value {
+      font-family: var(--terminal);
+      font-size: 46px;
+      line-height: 1;
+      color: var(--orange);
+      text-shadow: 0 0 16px rgba(247,147,26,.45);
+      letter-spacing: 1px;
+      word-break: break-all;
+      position: relative;
+    }
+    .dash-unit {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px;
+      letter-spacing: .06em;
+      position: relative;
+    }
+    .dash-updated {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted2);
+      margin-top: 10px;
+      letter-spacing: .04em;
+      position: relative;
+    }
+    .dash-loading {
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+    }
+
+    /* Node-Aufschlüsselung */
+    .dash-breakdown {
+      margin-top: 14px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .dash-break-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .dash-break-label {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .dash-break-label::before { content: '· '; color: var(--green-dim); }
+    .dash-break-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: right;
+    }
+    .dash-break-val.green  { color: var(--green);  }
+    .dash-break-val.orange { color: var(--orange); }
+
+    /* Länder-Liste */
+    .dash-countries {
+      margin-top: 14px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .dash-country-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-country-rank {
+      font-family: var(--terminal);
+      font-size: 14px;
+      color: var(--orange);
+      width: 20px;
+      flex-shrink: 0;
+    }
+    .dash-country-name {
+      font-size: 11px;
+      color: var(--text);
+      flex: 1;
+    }
+    .dash-country-bar-wrap {
+      flex: 2;
+      height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .dash-country-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-dim), var(--green));
+      border-radius: 4px;
+    }
+    .dash-country-count {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      text-align: right;
+      white-space: nowrap;
+      min-width: 50px;
     }
 
     footer {
@@ -695,19 +1133,40 @@
   <header>
     <div class="logo-wrap">
       <div class="logo-icon">₿</div>
-      <div>
-        <div class="logo-text">HODL TRACKER<span class="logo-cursor"></span></div>
-      </div>
+      <div class="logo-text">HODL TRACKER<span class="logo-cursor"></span></div>
     </div>
     <div class="subtitle">
       <span class="live-dot"></span>LIVE PRICE &nbsp;·&nbsp; PORTFOLIO &nbsp;·&nbsp; GLOBAL RANKING
     </div>
   </header>
 
+  <!-- ─── NAV BAR ─── -->
+  <div class="nav-bar">
+    <button class="nav-btn active" id="navBtn1" onclick="setPage(1)">
+      <span class="nav-btn-label">RANKING</span>
+    </button>
+    <button class="nav-btn" id="navBtn2" onclick="setPage(2)">
+      <span class="nav-btn-label">PROZENTE</span>
+    </button>
+    <button class="nav-btn" id="navBtn3" onclick="setPage(3)">
+      <span class="nav-btn-label">PORTFOLIO</span>
+    </button>
+    <button class="nav-btn" id="navBtn4" onclick="setPage(4)">
+      <span class="nav-btn-label">NETZWERK</span>
+    </button>
+  </div>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 1 — Portfolio & Ranking
+  ══════════════════════════════════════════ -->
+  <div class="page active" id="page1">
+
   <!-- ─── TICKER ─── -->
   <div class="ticker-bar">
     <div class="ticker-left">
-      <div class="ticker-label">BTC / PREIS</div>
+      <div class="ticker-label" data-i18n="tickerLabel">BTC / PREIS</div>
       <div class="ticker-price" id="tickerPrice">——</div>
     </div>
     <div class="ticker-right">
@@ -721,12 +1180,19 @@
     <div class="error-inner" id="errorMsg"></div>
   </div>
 
+  <!-- ─── PORTFOLIO WERT ─── -->
+  <div class="portfolio-value-bar">
+    <div class="pv-label" data-i18n="pvLabel">Mein Stack ist aktuell</div>
+    <div class="pv-value empty" id="pvValue">—</div>
+  </div>
+
   <!-- ─── INPUT ─── -->
   <div class="card">
-    <div class="input-label">Mein Bitcoin-Bestand eingeben</div>
+    <div class="input-label" data-i18n="btcLabel">Mein Bitcoin-Bestand eingeben</div>
     <div class="input-row">
-      <input class="btc-input" id="btcInput" type="number"
-        step="0.00000001" min="0" placeholder="0.00000000" inputmode="decimal" />
+      <input class="btc-input" id="btcInput" type="text"
+        placeholder="0.00000000" inputmode="decimal" autocomplete="off"
+        data-i18n-ph="btcPlaceholder" />
       <div class="input-unit">BTC</div>
     </div>
   </div>
@@ -734,7 +1200,7 @@
   <!-- ─── ★ RANKING CARD ─── -->
   <div class="card rank-card" id="rankCard">
 
-    <div class="rank-placeholder" id="rankPlaceholder">
+    <div class="rank-placeholder" id="rankPlaceholder" data-i18n="rankPlaceholder">
       Bestand eingeben, um dein globales Ranking zu sehen
     </div>
 
@@ -785,19 +1251,19 @@
       <!-- Stats list -->
       <div class="rank-stats">
         <div class="rank-stat">
-          <div class="rank-stat-label">Anteil am Umlauf</div>
+          <div class="rank-stat-label" data-i18n="supplyLabel">Anteil am Umlauf</div>
           <div class="rank-stat-value orange" id="statSupplyPct">—</div>
         </div>
         <div class="rank-stat">
-          <div class="rank-stat-label">Umlaufmenge (live)</div>
+          <div class="rank-stat-label" data-i18n="supplyLive">Umlaufmenge (live)</div>
           <div class="rank-stat-value" id="statSupply">—</div>
         </div>
         <div class="rank-stat">
-          <div class="rank-stat-label">Reichere Inhaber (est.)</div>
+          <div class="rank-stat-label" data-i18n="richerH">Reichere Inhaber (est.)</div>
           <div class="rank-stat-value green" id="statRicherHolders">—</div>
         </div>
         <div class="rank-stat">
-          <div class="rank-stat-label">Reichere Adressen</div>
+          <div class="rank-stat-label" data-i18n="richerA">Reichere Adressen</div>
           <div class="rank-stat-value" id="statRicherAddr">—</div>
         </div>
       </div>
@@ -829,6 +1295,103 @@
     </div>
   </div>
 
+  <!-- ─── MAX HOLDER CARD ─── -->
+  <div class="card" id="maxHoldersCard" style="display:none;">
+    <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">
+      <span style="color:var(--green-dim);">// </span>Maximale Anzahl gleichgroßer Bestände
+    </div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
+      <div style="font-size:11px;color:var(--muted);line-height:1.5;flex:1;">
+        Maximal könnten so viele Menschen denselben Bestand halten — basierend auf dem aktuellen Umlauf:
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <div style="font-family:var(--terminal);font-size:38px;line-height:1;color:var(--green);
+                  text-shadow:0 0 14px rgba(57,211,83,.45);letter-spacing:1px;" id="maxHoldersValue">—</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:5px;" id="maxHoldersSub">Menschen könnten gleichzeitig <span id="maxHoldersBtc">—</span> BTC halten</div>
+    </div>
+    <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);
+                display:flex;justify-content:space-between;font-size:9px;color:var(--muted2);">
+      <span>Umlauf: <span id="maxHoldersSupply" style="color:var(--muted);">—</span> BTC</span>
+      <span>÷ <span id="maxHoldersDivisor" style="color:var(--orange);">—</span> BTC = Ergebnis</span>
+    </div>
+  </div>
+
+  <!-- ─── HALVING COUNTDOWN ─── -->
+  <div class="card">
+    <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">
+      <span style="color:var(--orange-dim);">// </span>Nächstes Bitcoin Halving
+    </div>
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div>
+        <div style="font-family:var(--terminal);font-size:46px;line-height:1;color:var(--orange);
+                    text-shadow:0 0 18px rgba(247,147,26,.5);" id="halvingDays">—</div>
+        <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:4px;">TAGE</div>
+      </div>
+      <div style="flex:1;min-width:120px;">
+        <div style="font-size:11px;color:var(--text);line-height:1.6;" id="halvingBlocks">—</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="halvingTarget">Ziel: Block 1.050.000</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);
+                display:flex;justify-content:space-between;font-size:9px;color:var(--muted2);">
+      <span>Aktueller Block: <span id="halvingCurrentBlock" style="color:var(--muted);">—</span></span>
+      <span>ca. April 2028</span>
+    </div>
+  </div>
+
+  </div><!-- end page1 -->
+
+  <!-- ══════════════════════════════════════════
+       PAGE 2 — Prozent-Tabelle
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page2">
+
+  <!-- Hinweis: Bestand aus Seite 1 -->
+  <div style="width:calc(100% - 40px);max-width:480px;margin:14px 20px 0;
+              font-size:9px;color:var(--muted);letter-spacing:.08em;text-align:center;">
+    // BESTAND AUS SEITE 1 WIRD ÜBERNOMMEN
+  </div>
+
+  <!-- ─── SPARRECHNER ─── -->
+  <div class="card">
+    <div style="font-size:9px;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">
+      <span style="color:var(--orange);">> </span>Monatliche Sparrate
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:4px;">
+      <input id="savingsInput" type="text" inputmode="decimal" placeholder="z. B. 200"
+        style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+               color:var(--orange);font-family:var(--terminal);font-size:28px;line-height:1;
+               padding:10px 14px 8px;outline:none;-moz-appearance:textfield;
+               caret-color:var(--green);transition:border-color .2s;"
+        onfocus="this.style.borderColor='var(--green)'"
+        onblur="this.style.borderColor='var(--border2)'" />
+      <select id="savingsCurrency"
+        style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+               color:var(--green);font-family:var(--terminal);font-size:16px;
+               padding:10px 12px;outline:none;cursor:pointer;min-width:72px;">
+        <option value="EUR">EUR</option>
+        <option value="USD">USD</option>
+      </select>
+    </div>
+    <div style="font-size:9px;color:var(--muted);letter-spacing:.06em;margin-top:6px;">
+      Bei aktuellem Kurs · Bestand von Seite 1
+    </div>
+  </div>
+
+  <!-- ─── SPARPLAN-TABELLE ─── -->
+  <div class="card table-card" id="savingsTableCard">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;
+                padding:9px 14px;background:var(--bg);border-bottom:1px solid var(--border2);">
+      <div class="th">ZEITRAUM</div>
+      <div class="th" style="text-align:right;">BTC DAZU</div>
+      <div class="th" style="text-align:right;" id="savingsTh">% DES STACKS</div>
+    </div>
+    <div id="savingsTableBody">
+      <div class="placeholder"><span class="live-dot"></span>Sparrate eingeben …</div>
+    </div>
+  </div>
+
   <!-- ─── TOGGLE ─── -->
   <div class="toggle-wrap">
     <button class="toggle-btn active" id="btnEUR"  onclick="setCurrency('EUR')">€ EURO</button>
@@ -845,7 +1408,7 @@
     </div>
     <div class="table-body" id="tableBody">
       <div class="placeholder">
-        <span class="live-dot"></span>Bestand eingeben …
+        <span class="live-dot"></span>Bestand auf Seite 1 eingeben …
       </div>
     </div>
     <div class="total-row" id="totalRow" style="display:none;">
@@ -853,6 +1416,362 @@
       <div class="total-value" id="totalValue">—</div>
     </div>
   </div>
+
+  </div><!-- end page2 -->
+
+  <!-- ══════════════════════════════════════════
+       PAGE 3 — PORTFOLIO (Kreisdiagramm)
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page3">
+
+    <!-- BTC-Eingabe für Portfolio -->
+    <div class="card">
+      <div class="input-label" style="font-size:9px;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;">
+        <span style="color:var(--orange);">> </span>Bitcoin-Bestand im Portfolio
+      </div>
+      <div style="display:flex;gap:10px;">
+        <input class="btc-input" id="portBtcInput" type="text"
+          placeholder="0.00000000" inputmode="decimal" autocomplete="off"
+          style="font-size:24px;" />
+        <div class="input-unit">BTC</div>
+      </div>
+    </div>
+
+    <!-- Position hinzufügen -->
+    <div class="card">
+      <div style="font-size:9px;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">
+        <span style="color:var(--orange);">> </span>Position hinzufügen
+      </div>
+
+      <!-- 1. Kategorie wählen -->
+      <div style="font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">
+        Kategorie
+      </div>
+      <select id="portCategorySelect" onchange="Portfolio.onCategoryChange(this.value)"
+        style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+               color:var(--text);font-family:var(--terminal);font-size:16px;
+               padding:10px 12px;outline:none;cursor:pointer;margin-bottom:14px;
+               appearance:none;-webkit-appearance:none;
+               background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path fill=%22%2339d353%22 d=%22M6 8L0 0h12z%22/></svg>');
+               background-repeat:no-repeat;background-position:right 12px center;">
+        <option value="custom">✏️  Eigene Position</option>
+        <option value="gold">🥇  Gold</option>
+        <option value="silver">🥈  Silber</option>
+        <option value="altcoin">🪙  Altcoin</option>
+        <option value="stock">📈  Aktie / ETF</option>
+      </select>
+
+      <!-- 2. Eingabefelder (je nach Kategorie) -->
+
+      <!-- EIGENE -->
+      <div id="portFormCustom" style="display:flex;flex-direction:column;gap:8px;">
+        <input id="portEntryLabel" type="text" placeholder="Name (z.B. Sparkonto)"
+          style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                 color:var(--text);font-family:var(--mono);font-size:13px;
+                 padding:9px 12px;outline:none;" />
+        <div style="display:flex;gap:8px;">
+          <input id="portEntryAmount" type="text" inputmode="decimal" placeholder="Betrag"
+            style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--orange);font-family:var(--terminal);font-size:22px;
+                   padding:8px 12px 6px;outline:none;-moz-appearance:textfield;" />
+          <select id="portEntryCurrency"
+            style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--green);font-family:var(--terminal);font-size:16px;
+                   padding:8px 10px;outline:none;cursor:pointer;min-width:70px;">
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- GOLD -->
+      <div id="portFormGold" style="display:none;flex-direction:column;gap:8px;">
+        <!-- Name: unveränderbar -->
+        <div style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                    color:var(--muted);font-family:var(--mono);font-size:13px;
+                    padding:9px 12px;display:flex;align-items:center;gap:8px;">
+          <span>🥇</span><span>Gold</span>
+          <span style="margin-left:auto;font-size:9px;color:var(--muted2);">UNVERÄNDERBAR</span>
+        </div>
+        <!-- Unzen -->
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="portGoldOunces" type="text" inputmode="decimal" placeholder="Anzahl Unzen"
+            style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--orange);font-family:var(--terminal);font-size:22px;
+                   padding:8px 12px 6px;outline:none;-moz-appearance:textfield;" />
+          <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+                      color:#f7d07a;font-family:var(--terminal);font-size:14px;
+                      padding:8px 10px;">OZ</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:.05em;" id="portGoldPriceInfo">
+          Kurs wird geladen …
+        </div>
+      </div>
+
+      <!-- SILBER -->
+      <div id="portFormSilver" style="display:none;flex-direction:column;gap:8px;">
+        <!-- Name: unveränderbar -->
+        <div style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                    color:var(--muted);font-family:var(--mono);font-size:13px;
+                    padding:9px 12px;display:flex;align-items:center;gap:8px;">
+          <span>🥈</span><span>Silber</span>
+          <span style="margin-left:auto;font-size:9px;color:var(--muted2);">UNVERÄNDERBAR</span>
+        </div>
+        <!-- Unzen -->
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="portSilverOunces" type="text" inputmode="decimal" placeholder="Anzahl Unzen"
+            style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--orange);font-family:var(--terminal);font-size:22px;
+                   padding:8px 12px 6px;outline:none;-moz-appearance:textfield;" />
+          <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+                      color:#c0c0c0;font-family:var(--terminal);font-size:14px;
+                      padding:8px 10px;">OZ</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:.05em;" id="portSilverPriceInfo">
+          Kurs wird geladen …
+        </div>
+      </div>
+
+      <!-- ALTCOIN -->
+      <div id="portFormAltcoin" style="display:none;flex-direction:column;gap:8px;">
+        <!-- Suchfeld -->
+        <div style="position:relative;">
+          <input id="portCoinSearch" type="text" placeholder="Coin suchen (z.B. Ethereum, SOL …)"
+            autocomplete="off"
+            style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--text);font-family:var(--mono);font-size:13px;
+                   padding:9px 12px;outline:none;box-sizing:border-box;"
+            oninput="Portfolio.searchCoin(this.value)" />
+          <!-- Suchergebnis-Dropdown -->
+          <div id="portCoinResults"
+               style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
+                      background:var(--surface2);border:1px solid var(--green-dim);border-radius:8px;
+                      overflow:hidden;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.6);max-height:200px;overflow-y:auto;">
+          </div>
+        </div>
+        <!-- Ausgewählter Coin (nach Auswahl) -->
+        <div id="portCoinSelected" style="display:none;background:var(--bg);border:1px solid var(--green-dim);
+             border-radius:8px;padding:9px 12px;display:none;align-items:center;gap:8px;">
+          <span id="portCoinSelectedName" style="font-family:var(--terminal);font-size:15px;color:var(--green);"></span>
+          <span id="portCoinSelectedSymbol" style="font-size:10px;color:var(--muted);"></span>
+          <span id="portCoinSelectedPrice" style="margin-left:auto;font-size:11px;color:var(--orange);"></span>
+        </div>
+        <!-- Menge -->
+        <input id="portCoinAmount" type="text" inputmode="decimal" placeholder="Menge (z.B. 2.5)"
+          style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                 color:var(--orange);font-family:var(--terminal);font-size:22px;
+                 padding:8px 12px 6px;outline:none;-moz-appearance:textfield;" />
+        <div style="font-size:9px;color:var(--muted2);letter-spacing:.05em;">
+          Suche powered by CoinGecko · Live-Kurs bei Hinzufügen
+        </div>
+      </div>
+
+      <!-- AKTIE / ETF -->
+      <div id="portFormStock" style="display:none;flex-direction:column;gap:8px;">
+        <!-- Suchfeld -->
+        <div style="position:relative;">
+          <input id="portStockSearch" type="text"
+            placeholder="Aktie suchen (z.B. Coca Cola, Apple, NVDA …)"
+            autocomplete="off"
+            style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--text);font-family:var(--mono);font-size:13px;
+                   padding:9px 12px;outline:none;box-sizing:border-box;"
+            oninput="Portfolio.searchStock(this.value)" />
+          <!-- Suchergebnis-Dropdown -->
+          <div id="portStockResults"
+               style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
+                      background:var(--surface2);border:1px solid var(--green-dim);border-radius:8px;
+                      overflow:hidden;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.6);
+                      max-height:260px;overflow-y:auto;">
+          </div>
+        </div>
+        <!-- Ausgewählte Aktie -->
+        <div id="portStockSelected" style="display:none;background:var(--bg);border:1px solid var(--green-dim);
+             border-radius:8px;padding:9px 12px;align-items:center;gap:8px;">
+          <span id="portStockSelectedName" style="font-size:12px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+          <span id="portStockSelectedTicker" style="font-family:var(--terminal);font-size:14px;color:var(--orange);flex-shrink:0;"></span>
+          <span id="portStockSelectedPrice" style="font-family:var(--terminal);font-size:13px;color:var(--green);flex-shrink:0;"></span>
+        </div>
+        <!-- Anzahl Stücke -->
+        <input id="portStockShares" type="text" inputmode="decimal" placeholder="Anzahl Anteile"
+          style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                 color:var(--orange);font-family:var(--terminal);font-size:22px;
+                 padding:8px 12px 6px;outline:none;-moz-appearance:textfield;" />
+        <div style="font-size:9px;color:var(--muted2);letter-spacing:.05em;">
+          Via Yahoo Finance · Suche powered by Yahoo
+        </div>
+      </div>
+
+      <!-- Hinzufügen-Button -->
+      <button onclick="Portfolio.addEntry()"
+        style="width:100%;margin-top:12px;background:var(--green-dim);border:1px solid var(--green-dim);
+               border-radius:8px;color:var(--green);font-family:var(--terminal);font-size:18px;
+               letter-spacing:1px;padding:9px;cursor:pointer;transition:all .15s;"
+        onmouseover="this.style.background='var(--green)';this.style.color='#000';"
+        onmouseout="this.style.background='var(--green-dim)';this.style.color='var(--green)';">
+        + HINZUFÜGEN
+      </button>
+    </div>
+
+    <!-- Einträge-Liste — kollabierbar -->
+    <div id="portEntriesList" style="display:none;width:calc(100% - 40px);max-width:480px;margin:12px 20px 0;">
+
+      <!-- Banner-Header (immer sichtbar wenn Einträge vorhanden) -->
+      <button onclick="Portfolio.toggleList()"
+        style="width:100%;display:flex;align-items:center;justify-content:space-between;
+               background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);
+               padding:10px 14px;cursor:pointer;transition:border-color .15s;"
+        id="portListToggleBtn"
+        onmouseover="this.style.borderColor='var(--green-dim)'"
+        onmouseout="this.style.borderColor='var(--border2)'">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:9px;color:var(--green-dim);">//</span>
+          <span style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">
+            Positionen bearbeiten
+          </span>
+          <span style="font-family:var(--terminal);font-size:13px;color:var(--orange);" id="portListCount"></span>
+        </div>
+        <span style="font-family:var(--terminal);font-size:13px;color:var(--muted);" id="portListArrow">›</span>
+      </button>
+
+      <!-- Aufklappbarer Inhalt -->
+      <div id="portListBody"
+           style="overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1);">
+        <div style="background:var(--surface);border:1px solid var(--border2);
+                    border-top:none;border-radius:0 0 var(--radius) var(--radius);
+                    overflow:hidden;">
+          <div id="portEntriesBody"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Kreisdiagramm -->
+    <div id="portChartCard" style="display:none;width:calc(100% - 24px);max-width:496px;
+         margin:12px 12px 0;padding:18px;background:var(--surface);
+         border:1px solid var(--border2);border-radius:var(--radius);
+         box-shadow:inset 0 0 20px var(--glow-g),0 2px 12px rgba(0,0,0,.5);">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;">
+        // PORTFOLIO-VERTEILUNG
+        <span style="float:right;color:var(--green-dim);font-size:8px;" id="portChartUpdated"></span>
+      </div>
+
+      <!-- SVG Pie Chart — volle Breite -->
+      <div style="display:flex;justify-content:center;margin-bottom:16px;">
+        <svg id="portPieSvg" viewBox="0 0 200 200"
+             style="width:100%;max-width:340px;height:auto;display:block;"></svg>
+      </div>
+
+      <!-- Legende -->
+      <div id="portLegend" style="display:flex;flex-direction:column;gap:7px;"></div>
+
+      <!-- Gesamtwert -->
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);
+                  display:flex;justify-content:space-between;align-items:baseline;">
+        <div style="font-size:9px;color:var(--orange);text-transform:uppercase;letter-spacing:.1em;font-weight:700;">
+          <span style="color:var(--green-dim);">> </span>Gesamtportfolio
+        </div>
+        <div style="font-family:var(--terminal);font-size:22px;color:var(--orange);
+                    text-shadow:0 0 10px var(--glow-o);" id="portTotal">—</div>
+      </div>
+    </div>
+
+    <!-- Leer-Zustand -->
+    <div id="portEmpty" style="width:calc(100% - 40px);max-width:480px;margin:20px 20px 0;
+         text-align:center;color:var(--muted);font-size:11px;letter-spacing:.06em;">
+      <span class="live-dot"></span>Bitcoin und Positionen eingeben …
+    </div>
+
+  </div><!-- end page3 -->
+
+  <!-- ══════════════════════════════════════════
+       PAGE 4 — BTC Network Dashboard
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page4">
+
+    <div class="dash-card">
+      <div class="dash-label" data-i18n="hashLabel">Netzwerk Hashrate</div>
+      <div class="dash-value" id="dashHashrate">
+        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+      </div>
+      <div class="dash-unit" data-i18n="hashUnit">EH/s (Exahashes pro Sekunde)</div>
+      <div class="dash-updated" id="dashHashrateUpdated"></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label" data-i18n="blockLabel">Aktuelle Block-Höhe</div>
+      <div class="dash-value" id="dashBlockHeight">
+        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+      </div>
+      <div class="dash-unit" data-i18n="blockUnit">bestätigte Blöcke in der Chain</div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label" data-i18n="diffLabel">Nächste Difficulty-Anpassung</div>
+      <div class="dash-value" id="dashDifficulty">
+        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+      </div>
+      <div class="dash-unit" id="dashDiffSub" data-i18n="diffUnit">geschätzte Änderung</div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label" data-i18n="mempoolLabel">Unbestätigte Transaktionen</div>
+      <div class="dash-value" id="dashMempool">
+        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+      </div>
+      <div class="dash-unit" data-i18n="mempoolUnit">Transaktionen im Mempool</div>
+      <div class="dash-updated" id="dashMempoolSub"></div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-label" data-i18n="nodesLabel">Aktive Full Nodes</div>
+      <div class="dash-value" id="dashNodes">
+        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+      </div>
+      <div class="dash-unit" data-i18n="nodesUnit">erreichbare Bitcoin-Nodes weltweit</div>
+      <div class="dash-breakdown" id="dashBreakdown" style="display:none;">
+        <div class="dash-break-row">
+          <div class="dash-break-label" data-i18n="nodeCoreLabel">Bitcoin Core</div>
+          <div class="dash-break-val green" id="dashCore">—</div>
+        </div>
+        <div class="dash-break-row">
+          <div class="dash-break-label" data-i18n="nodeKnotsLabel">Bitcoin Knots</div>
+          <div class="dash-break-val orange" id="dashKnots">—</div>
+        </div>
+        <div class="dash-break-row">
+          <div class="dash-break-label" data-i18n="nodeOtherLabel">Sonstige</div>
+          <div class="dash-break-val" id="dashOther">—</div>
+        </div>
+      </div>
+      <div class="dash-updated" id="dashNodesUpdated"></div>
+    </div>
+
+    <!-- BTC Dominanz -->
+    <div class="dash-card">
+      <div class="dash-label" data-i18n="domLabel">BTC Marktdominanz</div>
+      <div class="dash-value" id="dashDominance">
+        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+      </div>
+      <div class="dash-unit" data-i18n="domUnit">Anteil am gesamten Krypto-Markt</div>
+      <div class="dash-updated" id="dashDomUpdated"></div>
+    </div>
+
+    <!-- Handelbare BTC auf Börsen -->
+    <div class="dash-card">
+      <div class="dash-label" data-i18n="exchLabel">Handelbare BTC auf Börsen</div>
+      <div class="dash-value" id="dashExchBtc">
+        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+      </div>
+      <div class="dash-unit" data-i18n="exchUnit">BTC aktuell auf allen Spot-Börsen</div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;" data-i18n="exchValLabel">Gesamtwert aller handelbaren BTC</div>
+        <div style="font-family:var(--terminal);font-size:26px;color:var(--green);
+                    text-shadow:0 0 10px rgba(57,211,83,.35);" id="dashExchValue">—</div>
+      </div>
+      <div class="dash-updated" id="dashExchUpdated"></div>
+    </div>
+
+  </div><!-- end page4 -->
 
   <footer>
     <span>//</span> Preise: CoinGecko API (Fallback: Binance)
@@ -930,6 +1849,13 @@
       priceEUR: null, priceUSD: null, change24h: null,
       circulatingSupply: null, btcHolding: 0,
       currency: 'EUR', lastUpdated: null,
+      blockHeight: null,
+      // Edelmetall-Preise (USD pro Troy-Unze)
+      priceGoldUSD:   null,
+      priceSilverUSD: null,
+      // Dynamische Asset-Preise
+      altcoinPrices:  {},   // { coinId: { eur, usd } }
+      stockPrices:    {},   // { ticker: { price, currency, name } }
     };
 
     /* ── Rankings ── */
@@ -957,10 +1883,14 @@
       getSupplyShare(btc, supply) {
         if (!supply || !btc) return null;
         const p = (btc / supply) * 100;
-        if (p >= 1)     return p.toFixed(4)     + ' %';
-        if (p >= 0.001) return p.toFixed(6)     + ' %';
-        if (p >= 1e-6)  return p.toFixed(8)     + ' %';
-        return p.toExponential(4) + ' %';
+        // Immer ausgeschrieben — niemals wissenschaftliche Notation
+        if (p >= 1)       return p.toFixed(4)  + ' %';
+        if (p >= 0.01)    return p.toFixed(6)  + ' %';
+        if (p >= 0.0001)  return p.toFixed(8)  + ' %';
+        if (p >= 0.000001)return p.toFixed(10) + ' %';
+        // Sehr kleine Zahlen: genug Stellen damit alle Ziffern sichtbar sind
+        const decimals = Math.min(Math.ceil(-Math.log10(p)) + 4, 20);
+        return p.toFixed(decimals) + ' %';
       },
       barPos(btc) {
         const mn = Math.log10(1e-6), mx = Math.log10(100_000);
@@ -990,6 +1920,172 @@
         try { return parseFloat((await (await fetch('https://api.binance.com/api/v3/ticker/price?symbol=EURUSDT')).json()).price); }
         catch { return 1.08; }
       },
+
+      /* Altcoin-Preise via CoinGecko (batch mit beliebig vielen IDs) */
+      async fetchAltcoinPrices(coinIds) {
+        if (!coinIds.length) return;
+        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds.join(',')}&vs_currencies=eur,usd`;
+        // Direkt
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (Object.keys(data).length) { Object.assign(state.altcoinPrices, data); return; }
+          }
+        } catch {}
+        // Fallback via Proxy
+        try {
+          const res  = await fetch('https://corsproxy.io/?url=' + encodeURIComponent(url));
+          const raw  = await res.text();
+          const data = JSON.parse(raw.startsWith('{') ? raw : JSON.parse(raw).contents);
+          Object.assign(state.altcoinPrices, data);
+        } catch(e) { console.warn('Altcoin-Preise Fehler:', e); }
+      },
+
+      /* Aktien-Suche via financeapi.net — kostenlos, kein Key, CORS-freundlich */
+      async searchStocks(query) {
+        try {
+          // Primär: financeapi.net (CORS-freundlich)
+          const res  = await fetch(
+            `https://ticker.financeapi.net/api/v1/tickerSearch?searchKey=${encodeURIComponent(query)}&lang=en&region=US`
+          );
+          const data = await res.json();
+          const results = (data?.data || [])
+            .filter(q => q.typeDisp === 'Equity' || q.typeDisp === 'ETF' || !q.typeDisp)
+            .slice(0, 8)
+            .map(q => ({
+              ticker:   q.symbol || q.ticker,
+              name:     q.companyName || q.name || q.symbol,
+              exchange: q.exchange || q.exchDisp || '',
+              type:     q.typeDisp || 'Equity',
+            }))
+            .filter(q => q.ticker);
+          if (results.length) return results;
+        } catch(e) {
+          console.warn('financeapi.net Fehler:', e);
+        }
+
+        // Fallback: Yahoo Finance Search via CORS-Proxy
+        try {
+          const proxy = 'https://api.allorigins.win/get?url=';
+          const url   = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=8&newsCount=0&enableFuzzyQuery=true`;
+          const res   = await fetch(proxy + encodeURIComponent(url));
+          const raw   = await res.json();
+          const data  = raw.contents ? JSON.parse(raw.contents) : raw;
+          return (data?.quotes || [])
+            .filter(q => q.quoteType === 'EQUITY' || q.quoteType === 'ETF')
+            .slice(0, 8)
+            .map(q => ({
+              ticker:   q.symbol,
+              name:     q.shortname || q.longname || q.symbol,
+              exchange: q.exchDisp || '',
+              type:     q.quoteType,
+            }));
+        } catch(e) {
+          console.warn('Yahoo search Fallback Fehler:', e);
+          return [];
+        }
+      },
+      async searchCoins(query) {
+        const url = `https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`;
+        // Direkt versuchen
+        try {
+          const res  = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.coins?.length) return data.coins.slice(0, 6);
+          }
+        } catch {}
+        // Fallback via CORS-Proxy
+        try {
+          const proxy = 'https://corsproxy.io/?url=';
+          const res   = await fetch(proxy + encodeURIComponent(url));
+          const raw   = await res.text();
+          const data  = JSON.parse(raw.startsWith('{') ? raw : JSON.parse(raw).contents);
+          return (data.coins || []).slice(0, 6);
+        } catch {}
+        // Fallback 2: allorigins
+        try {
+          const res  = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(url));
+          const raw  = await res.json();
+          const data = JSON.parse(raw.contents);
+          return (data.coins || []).slice(0, 6);
+        } catch {}
+        return [];
+      },
+
+      /* Aktien-Preis via Yahoo Finance — mehrere Fallbacks */
+      async fetchStockPrice(ticker) {
+        const proxies = [
+          'https://corsproxy.io/?url=',
+          'https://api.allorigins.win/get?url=',
+        ];
+
+        // Yahoo Finance v8 Chart API — funktioniert ohne Cookies
+        const yahooUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d&corsDomain=finance.yahoo.com`;
+
+        for (const proxy of proxies) {
+          try {
+            const res  = await fetch(proxy + encodeURIComponent(yahooUrl));
+            const raw  = await res.json();
+
+            // allorigins wraps in { contents: "..." }
+            const data = raw.contents ? JSON.parse(raw.contents) : raw;
+            const meta = data?.chart?.result?.[0]?.meta;
+            if (!meta?.regularMarketPrice) continue;
+
+            return {
+              price:    meta.regularMarketPrice,
+              currency: meta.currency || 'USD',
+              name:     meta.shortName || meta.symbol || ticker,
+            };
+          } catch(e) {
+            console.warn('Stock proxy', proxy, 'Fehler:', e.message);
+          }
+        }
+
+        // Letzter Fallback: direkt (klappt manchmal auf Vercel)
+        try {
+          const res  = await fetch(yahooUrl);
+          const data = await res.json();
+          const meta = data?.chart?.result?.[0]?.meta;
+          if (meta?.regularMarketPrice) {
+            return {
+              price:    meta.regularMarketPrice,
+              currency: meta.currency || 'USD',
+              name:     meta.shortName || ticker,
+            };
+          }
+        } catch {}
+
+        throw new Error('Ticker nicht gefunden — bitte US-Ticker verwenden (z.B. INTC, AAPL)');
+      },
+
+      /* Alle Aktien im Portfolio aktualisieren */
+      async fetchAllStockPrices(tickers) {
+        if (!tickers.length) return;
+        await Promise.all(tickers.map(async ticker => {
+          try {
+            const info = await this.fetchStockPrice(ticker);
+            state.stockPrices[ticker] = info;
+          } catch(e) { console.warn('Stock', ticker, 'Fehler:', e); }
+        }));
+      },
+      async fetchMetals() {
+        try {
+          const [gRes, sRes] = await Promise.all([
+            fetch('https://api.gold-api.com/price/XAU'),
+            fetch('https://api.gold-api.com/price/XAG'),
+          ]);
+          const gData = gRes.ok ? await gRes.json() : null;
+          const sData = sRes.ok ? await sRes.json() : null;
+          if (gData?.price) state.priceGoldUSD   = gData.price;
+          if (sData?.price) state.priceSilverUSD = sData.price;
+          Portfolio.updateMetalPriceInfo();
+        } catch(e) {
+          console.warn('Metals API Fehler:', e);
+        }
+      },
     };
 
     /* ── Formatter ── */
@@ -1003,32 +2099,107 @@
       time(d) { return d.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit', second:'2-digit' }); },
       pct(v) {
         if (v === null) return '—';
-        const s = v < 0.0001 ? v.toExponential(2)+' %'
-                : v < 0.001  ? v.toFixed(5)+' %'
-                : v < 0.01   ? v.toFixed(4)+' %'
-                : v < 0.1    ? v.toFixed(3)+' %'
-                : v < 1      ? v.toFixed(2)+' %'
-                :               v.toFixed(1)+' %';
-        return 'Top ' + s;
+        // Niemals wissenschaftliche Notation — immer ausgeschrieben
+        let s;
+        if      (v >= 1)       s = v.toFixed(1);
+        else if (v >= 0.1)     s = v.toFixed(2);
+        else if (v >= 0.01)    s = v.toFixed(3);
+        else if (v >= 0.001)   s = v.toFixed(4);
+        else if (v >= 0.0001)  s = v.toFixed(5);
+        else if (v >= 0.00001) s = v.toFixed(6);
+        else {
+          const dec = Math.min(Math.ceil(-Math.log10(v)) + 3, 20);
+          s = v.toFixed(dec);
+        }
+        return 'Top ' + s + ' %';
       },
       pctHero(v) {
         if (v === null) return '—';
-        return v < 0.001 ? v.toExponential(1)+' %'
-             : v < 0.01  ? v.toFixed(4)+' %'
-             : v < 1     ? v.toFixed(2)+' %'
-             :              v.toFixed(1)+' %';
+        // Niemals wissenschaftliche Notation — immer ausgeschrieben
+        if      (v >= 1)       return v.toFixed(1)  + ' %';
+        else if (v >= 0.01)    return v.toFixed(2)  + ' %';
+        else if (v >= 0.001)   return v.toFixed(3)  + ' %';
+        else if (v >= 0.0001)  return v.toFixed(4)  + ' %';
+        else if (v >= 0.00001) return v.toFixed(5)  + ' %';
+        else {
+          const dec = Math.min(Math.ceil(-Math.log10(v)) + 3, 20);
+          return v.toFixed(dec) + ' %';
+        }
       },
     };
 
     /* ── UI ── */
     const UI = {
+      updateHalving() {
+        // Nächstes Halving: Block 1.050.000
+        const NEXT_HALVING = 1_050_000;
+        const currentBlock = state.blockHeight;
+        if (!currentBlock) return;
+
+        const remaining     = Math.max(0, NEXT_HALVING - currentBlock);
+        const remainingDays = Math.round(remaining * 10 / 60 / 24);
+
+        document.getElementById('halvingDays').textContent         = remainingDays.toLocaleString('de-DE');
+        document.getElementById('halvingBlocks').textContent       = remaining.toLocaleString('de-DE') + ' Blöcke verbleibend';
+        document.getElementById('halvingCurrentBlock').textContent = currentBlock.toLocaleString('de-DE');
+      },
+
+      updateMaxHolders() {
+        const { btcHolding, circulatingSupply } = state;
+        const card = document.getElementById('maxHoldersCard');
+
+        if (!btcHolding || btcHolding <= 0 || !circulatingSupply) {
+          card.style.display = 'none';
+          return;
+        }
+        card.style.display = 'block';
+
+        const maxPeople = Math.floor(circulatingSupply / btcHolding);
+
+        // Zahl formatieren — mit Leerzeichen als Tausendertrenner
+        document.getElementById('maxHoldersValue').textContent =
+          maxPeople.toLocaleString('de-DE');
+        document.getElementById('maxHoldersBtc').textContent =
+          btcHolding.toLocaleString('de-DE', { maximumFractionDigits: 8 });
+        document.getElementById('maxHoldersSupply').textContent =
+          Math.round(circulatingSupply).toLocaleString('de-DE');
+        document.getElementById('maxHoldersDivisor').textContent =
+          btcHolding.toLocaleString('de-DE', { maximumFractionDigits: 8 });
+      },
+
+      updatePortfolioValue() {
+        const { btcHolding, priceEUR, priceUSD, currency } = state;
+        const el = document.getElementById('pvValue');
+        if (!btcHolding || !priceEUR) {
+          el.textContent = '—';
+          el.className = 'pv-value empty';
+          return;
+        }
+        const val = currency === 'USD' ? btcHolding * priceUSD : btcHolding * priceEUR;
+        const cur = currency === 'USD' ? 'USD' : 'EUR';
+        el.textContent = Fmt.fiat(val, cur);
+        el.className = 'pv-value';
+      },
+
       updateTicker() {
         const { priceEUR, priceUSD, change24h, currency, lastUpdated } = state;
         if (!priceEUR) return;
         const price = currency === 'USD' ? priceUSD : priceEUR;
         const cur   = currency === 'USD' ? 'USD' : 'EUR';
         const up    = change24h >= 0;
-        document.getElementById('tickerPrice').textContent = Fmt.fiat(price, cur);
+
+        // Preis-Flash bei Kursänderung
+        const el   = document.getElementById('tickerPrice');
+        const prev = parseFloat(el.dataset.prev || '0');
+        if (prev && price !== prev) {
+          el.classList.remove('flash-up', 'flash-down');
+          void el.offsetWidth; // reflow
+          el.classList.add(price > prev ? 'flash-up' : 'flash-down');
+          setTimeout(() => el.classList.remove('flash-up', 'flash-down'), 900);
+        }
+        el.dataset.prev = price;
+        el.textContent  = Fmt.fiat(price, cur);
+
         const ch = document.getElementById('tickerChange');
         ch.textContent = `${up?'▲':'▼'} ${Math.abs(change24h).toFixed(2)} %`;
         ch.className   = `ticker-change ${up?'up':'down'}`;
@@ -1054,14 +2225,28 @@
 
         document.getElementById('rankHeroNumber').textContent = Fmt.pctHero(holderPct);
         document.getElementById('rankHeroSub').innerHTML =
-          `aller geschätzten Bitcoin-Inhaber <strong>(~106 Mio.)</strong>`;
+          `${t('rankSub')} <strong>(~106 Mio.)</strong>`;
 
         document.getElementById('rankHolderPct').textContent = Fmt.pct(holderPct);
         document.getElementById('rankAddrPct').textContent   = Fmt.pct(addrPct);
 
+        // Tier Badge — Reveal-Animation wenn Tier sich ändert
+        const badge    = document.querySelector('.tier-badge');
+        const prevTier = badge?.dataset.tier;
         document.getElementById('tierEmoji').textContent = tier.emoji;
         document.getElementById('tierName').textContent  = tier.name;
         document.getElementById('tierName').style.color  = tier.color;
+        // Leuchtende Border-Farbe passend zum Tier
+        if (badge) {
+          badge.style.borderColor  = tier.color + '55';
+          badge.style.boxShadow    = `0 0 14px ${tier.color}33, inset 0 0 10px ${tier.color}11`;
+          if (badge.dataset.tier !== tier.name) {
+            badge.dataset.tier = tier.name;
+            badge.classList.remove('reveal');
+            void badge.offsetWidth;
+            badge.classList.add('reveal');
+          }
+        }
 
         document.getElementById('rankBarFill').style.width = barPos + '%';
         document.getElementById('rankBarDot').style.left   = barPos + '%';
@@ -1160,16 +2345,53 @@
         // localStorage: Bestand beim Laden wiederherstellen
         const saved = localStorage.getItem('hodl_btc');
         if (saved) {
-          document.getElementById('btcInput').value = saved;
+          const parts   = saved.split('.');
+          const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+          const formatted = parts.length > 1 ? intPart + '.' + parts[1] : intPart;
+          document.getElementById('btcInput').value = formatted;
           state.btcHolding = parseFloat(saved) || 0;
         }
 
         document.getElementById('btcInput').addEventListener('input', e => {
-          state.btcHolding = parseFloat(e.target.value) || 0;
-          localStorage.setItem('hodl_btc', e.target.value);
+          const raw = e.target.value;
+
+          // Nur Ziffern, Punkt und Komma erlauben
+          // Komma wird als Dezimaltrenner akzeptiert → intern als Punkt behandelt
+          const cleaned = raw.replace(/[^0-9.,]/g, '').replace(',', '.');
+
+          // Rohen Zahlwert extrahieren (ohne Leerzeichen)
+          const numericStr = cleaned.replace(/\s/g, '');
+          const parsed     = parseFloat(numericStr) || 0;
+
+          // Cursor-Position merken bevor wir den Wert ändern
+          const cursor = e.target.selectionStart;
+
+          // Ganzzahlteil mit Leerzeichen als Tausendertrenner formatieren
+          const parts   = numericStr.split('.');
+          const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+          const formatted = parts.length > 1
+            ? intPart + '.' + parts[1]   // Dezimalteil unverändert lassen
+            : intPart;
+
+          // Nur wenn sich die Darstellung ändert updaten (verhindert Cursor-Sprünge)
+          if (e.target.value !== formatted) {
+            e.target.value = formatted;
+          }
+
+          state.btcHolding = parsed;
+          localStorage.setItem('hodl_btc', numericStr);
+          UI.updatePortfolioValue();
+          UI.updateMaxHolders();
           UI.renderRanking();
           UI.renderTable();
         });
+
+        // Sparrechner Events
+        document.getElementById('savingsInput')?.addEventListener('input', () => SavingsCalc.render());
+        document.getElementById('savingsCurrency')?.addEventListener('change', () => SavingsCalc.render());
+
+        // Portfolio ZUERST laden — damit Altcoin/Stock-IDs beim ersten refresh bekannt sind
+        Portfolio.init();
 
         await this.refresh();
         setInterval(() => this.refresh(), CONFIG.refreshInterval);
@@ -1183,10 +2405,992 @@
             change24h: d.change24h, lastUpdated: new Date(),
             ...(d.circulatingSupply ? { circulatingSupply: d.circulatingSupply } : {}),
           });
-          UI.hideError(); UI.updateTicker(); UI.renderRanking(); UI.renderTable();
+          UI.hideError(); UI.updateTicker(); UI.updatePortfolioValue(); UI.updateMaxHolders(); UI.renderRanking(); UI.renderTable();
+          SavingsCalc.render();
+          Portfolio.render();
+          Portfolio.updateMetalPriceInfo();
+          UI.updateHalving();
+          // Edelmetall + dynamische Preise parallel aktualisieren
+          API.fetchMetals();
+          // Altcoins + Aktien aus Portfolio nachladen
+          const altcoinIds = Portfolio.data.entries.filter(e => e.type === 'altcoin').map(e => e.coinId);
+          const stockTickers = [...new Set(Portfolio.data.entries.filter(e => e.type === 'stock').map(e => e.ticker))];
+          if (altcoinIds.length) API.fetchAltcoinPrices(altcoinIds).then(() => Portfolio.render());
+          if (stockTickers.length) API.fetchAllStockPrices(stockTickers).then(() => Portfolio.render()); // Chart live mit neuem Preis updaten
         } catch(err) { UI.showError(`PREISABRUF FEHLER: ${err.message}`); }
       },
     };
+
+    /* ─────────────────────────────────────────────
+       MODUL: Navigation — 4 Seiten
+    ───────────────────────────────────────────── */
+    function setPage(n) {
+      [1,2,3,4].forEach(i => {
+        document.getElementById(`page${i}`).classList.toggle('active', i === n);
+        document.getElementById(`navBtn${i}`).classList.toggle('active', i === n);
+      });
+      if (n === 2) { UI.renderTable(); SavingsCalc.render(); }
+      if (n === 3) Portfolio.render();
+      if (n === 4) Dashboard.init();
+    }
+
+    /* ─────────────────────────────────────────────
+       MODUL: Portfolio — Kreisdiagramm
+       Unabhängig von Seite 1 — eigener BTC-Bestand
+       + beliebig viele Fiat-Einträge
+       Alles in localStorage gespeichert
+    ───────────────────────────────────────────── */
+    const Portfolio = {
+
+      // Farbpalette für Slices (BTC immer orange)
+      colors: ['#f7931a','#39d353','#7dd4f7','#c87ef7','#f7d07a','#e8445a','#b8f77e','#7ec8f7','#ff9966','#66ccff'],
+
+      // State: btc-Menge + Einträge
+      data: { btc: 0, entries: [] },
+
+      /* Laden aus localStorage */
+      load() {
+        try {
+          const saved = localStorage.getItem('hodl_portfolio');
+          if (saved) this.data = JSON.parse(saved);
+        } catch {}
+      },
+
+      /* Speichern in localStorage */
+      save() {
+        localStorage.setItem('hodl_portfolio', JSON.stringify(this.data));
+      },
+
+      /* Initialisierung */
+      init() {
+        this.load();
+
+        // BTC-Input wiederherstellen
+        const btcEl = document.getElementById('portBtcInput');
+        if (this.data.btc) {
+          const parts = String(this.data.btc).split('.');
+          const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+          btcEl.value = parts.length > 1 ? intPart + '.' + parts[1] : intPart;
+        }
+
+        // BTC-Input Event
+        btcEl.addEventListener('input', e => {
+          const cleaned = e.target.value.replace(/[^0-9.,]/g, '').replace(',','.');
+          const numeric = cleaned.replace(/\s/g,'');
+          const parts   = numeric.split('.');
+          const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+          e.target.value = parts.length > 1 ? intPart+'.'+parts[1] : intPart;
+          this.data.btc = parseFloat(numeric) || 0;
+          this.save();
+          this.render();
+        });
+
+        this.render();
+      },
+
+      // Aktiver Tab (custom / gold / silver)
+      activeTab: 'custom',
+
+      /* Kategorie-Select geändert */
+      onCategoryChange(val) {
+        this.activeTab = val;
+        this._switchForm(val);
+      },
+
+      /* Formular-Felder ein/ausblenden */
+      _switchForm(type) {
+        ['Custom','Gold','Silver','Altcoin','Stock'].forEach(f => {
+          const el = document.getElementById('portForm' + f);
+          if (el) el.style.display = f.toLowerCase() === type ? 'flex' : 'none';
+        });
+      },
+
+      /* Aktien-Suche (debounced) */
+      _stockSearchTimer: null,
+      _stockResults: [],
+      searchStock(query) {
+        clearTimeout(this._stockSearchTimer);
+        const results  = document.getElementById('portStockResults');
+        document.getElementById('portStockSelected').style.display = 'none';
+        this._verifiedStock = null;
+        if (!query || query.length < 1) { results.style.display = 'none'; return; }
+        results.innerHTML = `<div style="padding:10px 14px;font-size:11px;color:var(--muted);">⏳ sucht …</div>`;
+        results.style.display = 'block';
+        this._stockSearchTimer = setTimeout(async () => {
+          const stocks = await API.searchStocks(query);
+          this._stockResults = stocks;
+          if (!stocks.length) {
+            results.innerHTML = `<div style="padding:10px 14px;font-size:11px;color:var(--muted);">Keine Treffer — versuche englischen Namen oder Ticker (z.B. KO)</div>`;
+            return;
+          }
+          results.innerHTML = stocks.map((s, idx) => `
+            <div onclick="Portfolio.selectStockByIdx(${idx})"
+                 style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;
+                        border-bottom:1px solid var(--border);transition:background .12s;"
+                 onmouseover="this.style.background='rgba(247,147,26,.07)'"
+                 onmouseout="this.style.background=''">
+              <div style="min-width:0;flex:1;">
+                <div style="font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</div>
+                <div style="font-size:9px;color:var(--muted);margin-top:1px;">${s.exchange}</div>
+              </div>
+              <div style="font-family:var(--terminal);font-size:14px;color:var(--orange);flex-shrink:0;">${s.ticker}</div>
+            </div>`).join('');
+          results.style.display = 'block';
+        }, 300);
+      },
+
+      /* Aktie per Index auswählen — _verifiedStock sofort setzen */
+      async selectStockByIdx(idx) {
+        const s = this._stockResults[idx];
+        if (!s) return;
+        document.getElementById('portStockSearch').value          = s.name;
+        document.getElementById('portStockResults').style.display = 'none';
+        const sel      = document.getElementById('portStockSelected');
+        const namEl    = document.getElementById('portStockSelectedName');
+        const tickerEl = document.getElementById('portStockSelectedTicker');
+        const priceEl  = document.getElementById('portStockSelectedPrice');
+        namEl.textContent    = s.name;
+        tickerEl.textContent = s.ticker;
+        priceEl.textContent  = '⏳';
+        sel.style.display    = 'flex';
+
+        // ★ SOFORT setzen — damit Hinzufügen immer funktioniert
+        this._verifiedStock = { ticker: s.ticker, name: s.name, currency: 'USD', price: null };
+
+        // Preis asynchron laden (non-blocking)
+        let price = null, currency = 'USD';
+
+        // Versuch 1: financeapi.net (direkt, kein Proxy)
+        try {
+          const res  = await fetch(`https://ticker.financeapi.net/api/v1/quote?symbols=${encodeURIComponent(s.ticker)}`);
+          if (res.ok) {
+            const data = await res.json();
+            const q    = data?.data?.[s.ticker] || Object.values(data?.data || {})[0];
+            if (q?.regularMarketPrice) {
+              price    = q.regularMarketPrice;
+              currency = q.currency || 'USD';
+            }
+          }
+        } catch {}
+
+        // Versuch 2: Yahoo Finance via Proxy
+        if (!price) {
+          try {
+            const info = await API.fetchStockPrice(s.ticker);
+            if (info?.price) { price = info.price; currency = info.currency || 'USD'; }
+          } catch {}
+        }
+
+        // Anzeige + State aktualisieren
+        if (price) {
+          priceEl.textContent  = Fmt.fiat(price, currency);
+          this._verifiedStock  = { ticker: s.ticker, name: s.name, currency, price };
+          state.stockPrices[s.ticker] = { price, currency, name: s.name };
+        } else {
+          priceEl.textContent  = '✓ ausgewählt (kein Live-Kurs)';
+          priceEl.style.color  = 'var(--muted)';
+          // _verifiedStock bleibt gesetzt — kann trotzdem hinzugefügt werden
+        }
+      },
+
+      /* Coin-Suche (debounced) — ab 1. Zeichen */
+      _searchTimer: null,
+      searchCoin(query) {
+        clearTimeout(this._searchTimer);
+        const results  = document.getElementById('portCoinResults');
+        const selected = document.getElementById('portCoinSelected');
+        if (!query || query.length < 1) { results.style.display = 'none'; return; }
+        results.innerHTML = `<div style="padding:10px 14px;font-size:11px;color:var(--muted);">⏳ sucht …</div>`;
+        results.style.display = 'block';
+        this._searchTimer = setTimeout(async () => {
+          try {
+            const coins = await API.searchCoins(query);
+            if (!coins.length) { results.innerHTML = `<div style="padding:10px 14px;font-size:11px;color:var(--muted);">Keine Treffer</div>`; return; }
+            results.innerHTML = coins.map(c => `
+              <div onclick="Portfolio.selectCoin('${c.id}','${c.name.replace(/'/g,"\\'")}','${c.symbol}')"
+                   style="display:flex;align-items:center;gap:10px;padding:9px 13px;cursor:pointer;
+                          border-bottom:1px solid var(--border);transition:background .12s;"
+                   onmouseover="this.style.background='rgba(57,211,83,.07)'"
+                   onmouseout="this.style.background=''">
+                <img src="${c.thumb}" width="20" height="20" style="border-radius:50%;" onerror="this.style.display='none'"/>
+                <span style="font-size:13px;color:var(--text);flex:1;">${c.name}</span>
+                <span style="font-size:10px;color:var(--muted);">${c.symbol.toUpperCase()}</span>
+              </div>`).join('');
+            results.style.display = 'block';
+          } catch(e) { results.style.display = 'none'; }
+        }, 300);
+      },
+
+      /* Coin aus Suche auswählen */
+      _selectedCoin: null,
+      async selectCoin(id, name, symbol) {
+        this._selectedCoin = { id, name, symbol };
+        document.getElementById('portCoinSearch').value  = name;
+        document.getElementById('portCoinResults').style.display = 'none';
+        const selected = document.getElementById('portCoinSelected');
+        selected.style.display = 'flex';
+        document.getElementById('portCoinSelectedName').textContent   = name;
+        document.getElementById('portCoinSelectedSymbol').textContent = symbol.toUpperCase();
+        document.getElementById('portCoinSelectedPrice').textContent  = '⏳ Kurs lädt …';
+        try {
+          await API.fetchAltcoinPrices([id]);
+          const p   = state.altcoinPrices[id];
+          const cur = state.currency === 'USD' ? 'USD' : 'EUR';
+          if (p) {
+            document.getElementById('portCoinSelectedPrice').textContent =
+              Fmt.fiat(cur === 'USD' ? p.usd : p.eur, cur);
+            // Direkt Diagramm aktualisieren falls Coin bereits im Portfolio
+            Portfolio.render();
+          }
+        } catch(e) {
+          document.getElementById('portCoinSelectedPrice').textContent = '—';
+        }
+      },
+
+      _verifiedStock: null,
+
+      /* Aktuellen Kurs in Dropdown + Formular-Infos anzeigen */
+      updateMetalPriceInfo() {
+        const cur  = state.currency === 'USD' ? 'USD' : 'EUR';
+        const rate = state.priceUSD && state.priceEUR ? state.priceUSD / state.priceEUR : 1;
+
+        const fmtMetal = (usd) => {
+          if (!usd) return 'Kurs wird geladen …';
+          const val = cur === 'USD' ? usd : usd / rate;
+          return Fmt.fiat(val, cur) + ' / Unze';
+        };
+
+        const goldStr   = fmtMetal(state.priceGoldUSD);
+        const silverStr = fmtMetal(state.priceSilverUSD);
+
+        // Dropdown
+        const dg = document.getElementById('dropGoldPrice');
+        const ds = document.getElementById('dropSilverPrice');
+        if (dg) dg.textContent = goldStr;
+        if (ds) ds.textContent = silverStr;
+
+        // Formular-Info
+        const fg = document.getElementById('portGoldPriceInfo');
+        const fs = document.getElementById('portSilverPriceInfo');
+        if (fg) fg.textContent = '🥇 ' + goldStr + ' (live)';
+        if (fs) fs.textContent = '🥈 ' + silverStr + ' (live)';
+      },
+
+      addEntry() {
+        const tab = this.activeTab;
+
+        if (tab === 'custom') {
+          const label     = (document.getElementById('portEntryLabel')?.value || '').trim();
+          const amountRaw = document.getElementById('portEntryAmount').value.replace(/[^0-9.,]/g,'').replace(',','.');
+          const amount    = parseFloat(amountRaw) || 0;
+          const currency  = document.getElementById('portEntryCurrency').value;
+          if (!label || !amount) return;
+          this.data.entries.push({ id: Date.now(), type: 'custom', label, amount, currency });
+          document.getElementById('portEntryLabel').value  = '';
+          document.getElementById('portEntryAmount').value = '';
+
+        } else if (tab === 'gold') {
+          const ounces = parseFloat(document.getElementById('portGoldOunces').value.replace(',','.')) || 0;
+          if (!ounces) return;
+          this.data.entries.push({ id: Date.now(), type: 'gold', label: 'Gold', ounces });
+          document.getElementById('portGoldOunces').value = '';
+
+        } else if (tab === 'silver') {
+          const ounces = parseFloat(document.getElementById('portSilverOunces').value.replace(',','.')) || 0;
+          if (!ounces) return;
+          this.data.entries.push({ id: Date.now(), type: 'silver', label: 'Silber', ounces });
+          document.getElementById('portSilverOunces').value = '';
+
+        } else if (tab === 'altcoin') {
+          if (!this._selectedCoin) return;
+          const amountRaw = document.getElementById('portCoinAmount').value.replace(/[^0-9.,]/g,'').replace(',','.');
+          const amount    = parseFloat(amountRaw) || 0;
+          if (!amount) return;
+          const coinId = this._selectedCoin.id;
+          this.data.entries.push({
+            id: Date.now(), type: 'altcoin',
+            label:  this._selectedCoin.name,
+            symbol: this._selectedCoin.symbol.toUpperCase(),
+            coinId,
+            amount,
+          });
+          document.getElementById('portCoinSearch').value      = '';
+          document.getElementById('portCoinAmount').value      = '';
+          document.getElementById('portCoinResults').style.display   = 'none';
+          document.getElementById('portCoinSelected').style.display  = 'none';
+          this._selectedCoin = null;
+          this.save();
+          this.render();
+          // Preis sofort holen und neu rendern — immer, nicht nur wenn fehlend
+          API.fetchAltcoinPrices([coinId]).then(() => {
+            Portfolio.render();
+          }).catch(() => {});
+          return;
+
+        } else if (tab === 'stock') {
+          const sharesRaw = document.getElementById('portStockShares').value.replace(/[^0-9.,]/g,'').replace(',','.');
+          const shares    = parseFloat(sharesRaw) || 0;
+          if (!shares || !this._verifiedStock) return;
+          const s = this._verifiedStock;
+          this.data.entries.push({
+            id: Date.now(), type: 'stock',
+            label:    s.name,
+            ticker:   s.ticker,
+            currency: s.currency || 'USD',
+            shares,
+          });
+          document.getElementById('portStockSearch').value          = '';
+          document.getElementById('portStockShares').value          = '';
+          document.getElementById('portStockSelected').style.display = 'none';
+          document.getElementById('portStockResults').style.display  = 'none';
+          this._verifiedStock = null;
+          this.save();
+          this.render();
+          // Preis sofort holen und neu rendern — immer
+          API.fetchStockPrice(s.ticker).then(data => {
+            state.stockPrices[s.ticker] = data;
+            Portfolio.render();
+          }).catch(() => {});
+          return;
+        }
+
+        this.save();
+        this.render();
+      },
+
+      /* Eintrag löschen */
+      removeEntry(id) {
+        this.data.entries = this.data.entries.filter(e => e.id !== id);
+        this.save();
+        this.render();
+      },
+
+      /* Edit-Modus öffnen — wandelt Zeile in Inline-Formular */
+      editEntry(id) {
+        const entry = this.data.entries.find(e => e.id === id);
+        if (!entry) return;
+        const row = document.getElementById('portRow_' + id);
+        if (!row) return;
+
+        // Wert und Label je nach Typ bestimmen
+        const isOunces  = entry.type === 'gold' || entry.type === 'silver';
+        const isAltcoin = entry.type === 'altcoin';
+        const isStock   = entry.type === 'stock';
+        const currentVal = isOunces  ? entry.ounces
+                         : isAltcoin ? entry.amount
+                         : isStock   ? entry.shares
+                         : entry.amount;
+        const valLabel = isOunces ? 'Unzen' : isStock ? 'Anteile' : isAltcoin ? 'Menge' : 'Betrag';
+
+        // Währungs-Select nur für Custom-Einträge
+        const showCurrency = !isOunces && !isAltcoin && !isStock;
+
+        row.innerHTML = `
+          <div style="display:flex;flex-direction:column;gap:7px;padding:10px 16px;
+                      border-bottom:1px solid var(--border);background:rgba(57,211,83,.04);">
+            <input id="editLabel_${id}" type="text" value="${entry.label}"
+              style="background:var(--bg);border:1px solid var(--green-dim);border-radius:7px;
+                     color:var(--text);font-family:var(--mono);font-size:12px;
+                     padding:7px 10px;outline:none;width:100%;" />
+            <div style="display:flex;gap:7px;align-items:center;">
+              <input id="editVal_${id}" type="text" value="${currentVal}"
+                placeholder="${valLabel}"
+                style="flex:1;background:var(--bg);border:1px solid var(--green-dim);border-radius:7px;
+                       color:var(--orange);font-family:var(--terminal);font-size:20px;
+                       padding:6px 10px 4px;outline:none;" />
+              ${showCurrency ? `
+              <select id="editCurrency_${id}"
+                style="background:var(--surface3);border:1px solid var(--green-dim);border-radius:7px;
+                       color:var(--green);font-family:var(--terminal);font-size:14px;
+                       padding:6px 8px;outline:none;cursor:pointer;">
+                <option value="EUR" ${entry.currency==='EUR'?'selected':''}>EUR</option>
+                <option value="USD" ${entry.currency==='USD'?'selected':''}>USD</option>
+              </select>` : `<span style="font-size:11px;color:var(--muted);padding:0 6px;">${isOunces ? 'OZ' : isAltcoin ? (entry.symbol||'') : entry.ticker||''}</span>`}
+            </div>
+            <div style="display:flex;gap:7px;">
+              <button onclick="Portfolio.saveEntry(${id})"
+                style="flex:1;background:var(--green-dim);border:1px solid var(--green-dim);
+                       border-radius:7px;color:var(--green);font-family:var(--terminal);
+                       font-size:15px;padding:7px;cursor:pointer;letter-spacing:1px;">
+                ✓ SPEICHERN
+              </button>
+              <button onclick="Portfolio.render()"
+                style="background:none;border:1px solid var(--muted2);border-radius:7px;
+                       color:var(--muted);font-family:var(--terminal);font-size:15px;
+                       padding:7px 12px;cursor:pointer;">✕</button>
+            </div>
+          </div>`;
+      },
+
+      /* Eintrag speichern nach Edit */
+      saveEntry(id) {
+        const entry = this.data.entries.find(e => e.id === id);
+        if (!entry) return;
+
+        const label  = document.getElementById('editLabel_' + id)?.value.trim();
+        const rawVal = document.getElementById('editVal_' + id)?.value
+                         .replace(/[^0-9.,]/g,'').replace(',','.');
+        const val    = parseFloat(rawVal) || 0;
+        if (!label || !val) return;
+
+        const isOunces  = entry.type === 'gold' || entry.type === 'silver';
+        const isAltcoin = entry.type === 'altcoin';
+        const isStock   = entry.type === 'stock';
+
+        entry.label = label;
+        if (isOunces)       entry.ounces   = val;
+        else if (isAltcoin) entry.amount   = val;
+        else if (isStock)   entry.shares   = val;
+        else {
+          entry.amount   = val;
+          entry.currency = document.getElementById('editCurrency_' + id)?.value || entry.currency;
+        }
+
+        this.save();
+        this.render();
+      },
+
+      /* Ein/Ausklappen der Eintrags-Liste */
+      toggleList() {
+        const body  = document.getElementById('portListBody');
+        const arrow = document.getElementById('portListArrow');
+        const open  = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+        if (open) {
+          body.style.maxHeight = '0px';
+          arrow.textContent = '›';
+        } else {
+          body.style.maxHeight = body.scrollHeight + 500 + 'px';
+          arrow.textContent = '↑';
+        }
+      },
+
+      /* Eintrags-Liste rendern */
+      renderList() {
+        const listWrap = document.getElementById('portEntriesList');
+        const body     = document.getElementById('portEntriesBody');
+        const countEl  = document.getElementById('portListCount');
+        const allItems = [];
+
+        if (this.data.btc > 0) {
+          allItems.push({ label: 'Bitcoin', display: this.data.btc + ' BTC', isBtc: true });
+        }
+        this.data.entries.forEach(e => {
+          let display;
+          if (e.type === 'gold')    display = '🥇 ' + e.ounces + ' oz';
+          else if (e.type === 'silver') display = '🥈 ' + e.ounces + ' oz';
+          else if (e.type === 'altcoin') display = '🪙 ' + e.amount + ' ' + (e.symbol || '');
+          else if (e.type === 'stock')   display = '📈 ' + e.shares + ' × ' + e.ticker;
+          else display = e.amount.toLocaleString('de-DE') + ' ' + e.currency;
+          allItems.push({ label: e.label, display, id: e.id });
+        });
+
+        if (allItems.length === 0) {
+          listWrap.style.display = 'none';
+          return;
+        }
+        listWrap.style.display = 'block';
+
+        // Anzahl im Banner anzeigen
+        if (countEl) countEl.textContent = '(' + allItems.length + ')';
+
+        body.innerHTML = allItems.map((item, i) => `
+          <div id="portRow_${item.id || 'btc'}"
+               style="display:flex;align-items:center;justify-content:space-between;
+                      padding:10px 16px;border-bottom:1px solid var(--border);gap:10px;">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+              <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;
+                          background:${this.colors[i % this.colors.length]};
+                          box-shadow:0 0 6px ${this.colors[i % this.colors.length]};"></div>
+              <span style="font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                ${item.label}
+              </span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+              <span style="font-family:var(--terminal);font-size:16px;color:var(--orange);">
+                ${item.display}
+              </span>
+              ${!item.isBtc ? `
+                <button onclick="Portfolio.editEntry(${item.id})"
+                  style="background:none;border:1px solid var(--muted2);border-radius:5px;
+                         color:var(--muted);font-size:10px;padding:2px 6px;cursor:pointer;transition:all .15s;"
+                  onmouseover="this.style.borderColor='var(--green-dim)';this.style.color='var(--green)';"
+                  onmouseout="this.style.borderColor='var(--muted2)';this.style.color='var(--muted)';">✎</button>
+                <button onclick="Portfolio.removeEntry(${item.id})"
+                  style="background:none;border:1px solid var(--muted2);border-radius:5px;
+                         color:var(--muted);font-size:10px;padding:2px 6px;cursor:pointer;transition:all .15s;"
+                  onmouseover="this.style.borderColor='#e8445a';this.style.color='#e8445a';"
+                  onmouseout="this.style.borderColor='var(--muted2)';this.style.color='var(--muted)';">✕</button>` : ''}
+            </div>
+          </div>`).join('');
+
+        // Höhe aktualisieren falls bereits offen
+        const listBody = document.getElementById('portListBody');
+        if (listBody.style.maxHeight && listBody.style.maxHeight !== '0px') {
+          listBody.style.maxHeight = listBody.scrollHeight + 500 + 'px';
+        }
+      },
+
+      /* Kreisdiagramm + Legende rendern */
+      render() {
+        const { btc, entries } = this.data;
+        const priceEUR = state.priceEUR;
+        const priceUSD = state.priceUSD;
+        const cur      = state.currency === 'USD' ? 'USD' : 'EUR';
+        const price    = cur === 'USD' ? priceUSD : priceEUR;
+
+        // Einträge-Liste IMMER rendern (unabhängig von Preisen)
+        this.renderList();
+
+        const empty   = document.getElementById('portEmpty');
+        const chart   = document.getElementById('portChartCard');
+        const hasData = btc > 0 || entries.length > 0;
+
+        if (!hasData || !priceEUR) {
+          empty.style.display = 'block';
+          chart.style.display = 'none';
+          return;
+        }
+        empty.style.display = 'none';
+        chart.style.display = 'block';
+
+        // ── Alle Einträge für Legende (mit oder ohne Preis) ──
+        const allSlices = [];
+
+        if (btc > 0 && price) {
+          allSlices.push({ label: 'Bitcoin', value: btc * price, currency: cur, type: 'btc', hasPrice: true });
+        }
+
+        const rate = priceUSD && priceEUR ? priceUSD / priceEUR : 1;
+
+        entries.forEach(e => {
+          let val = null;
+
+          if (e.type === 'gold' || e.type === 'silver') {
+            const metalUSD = e.type === 'gold' ? state.priceGoldUSD : state.priceSilverUSD;
+            if (metalUSD) {
+              const mv = metalUSD * e.ounces;
+              val = cur === 'USD' ? mv : mv / rate;
+            }
+          } else if (e.type === 'altcoin') {
+            const p = state.altcoinPrices[e.coinId];
+            if (p) val = cur === 'USD' ? p.usd * e.amount : p.eur * e.amount;
+          } else if (e.type === 'stock') {
+            const s = state.stockPrices[e.ticker];
+            if (s?.price) {
+              val = s.currency === cur ? s.price * e.shares
+                  : cur === 'EUR' ? (s.price * e.shares) / rate
+                  : (s.price * e.shares) * rate;
+            }
+          } else {
+            val = e.amount;
+            if (e.currency !== cur && priceEUR && priceUSD) {
+              val = e.currency === 'USD' ? e.amount / rate : e.amount * rate;
+            }
+          }
+
+          allSlices.push({
+            label:    e.label,
+            value:    val ?? 0,
+            currency: cur,
+            type:     e.type || 'custom',
+            hasPrice: val !== null,
+          });
+        });
+
+        // ── Nur Slices MIT Preis für das SVG-Diagramm ──
+        const chartSlices = allSlices.filter(s => s.hasPrice && s.value > 0);
+        const total       = chartSlices.reduce((s, sl) => s + sl.value, 0);
+
+        // ── SVG Pie Chart ──
+        const svg = document.getElementById('portPieSvg');
+        const cx = 100, cy = 100, r = 80, innerR = 45;
+        let angle = -Math.PI / 2;
+        let paths = '';
+
+        chartSlices.forEach((sl, i) => {
+          const frac     = sl.value / total;
+          const endAngle = angle + frac * 2 * Math.PI;
+          const x1 = cx + r * Math.cos(angle),   y1 = cy + r * Math.sin(angle);
+          const x2 = cx + r * Math.cos(endAngle), y2 = cy + r * Math.sin(endAngle);
+          const ix1 = cx + innerR * Math.cos(angle),   iy1 = cy + innerR * Math.sin(angle);
+          const ix2 = cx + innerR * Math.cos(endAngle), iy2 = cy + innerR * Math.sin(endAngle);
+          const large = frac > 0.5 ? 1 : 0;
+          const col   = this.colors[allSlices.indexOf(sl) % this.colors.length];
+          paths += `<path d="M${ix1},${iy1} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} L${ix2},${iy2} A${innerR},${innerR} 0 ${large},0 ${ix1},${iy1} Z"
+            fill="${col}" opacity="0.92" stroke="var(--bg)" stroke-width="1.5"/>`;
+          angle = endAngle;
+        });
+
+        paths += `<text x="${cx}" y="${cy - 6}" text-anchor="middle"
+          font-family="var(--terminal)" font-size="11" fill="var(--muted)" letter-spacing="1">TOTAL</text>
+          <text x="${cx}" y="${cy + 10}" text-anchor="middle"
+          font-family="var(--terminal)" font-size="13" fill="var(--orange)">
+          ${Fmt.fiat(total, cur).replace(/\s/g,'')}</text>`;
+        svg.innerHTML = paths;
+
+        // ── Legende — alle Einträge nach Kategorie ──
+        const legend = document.getElementById('portLegend');
+        const categories = [
+          { key: 'btc',     label: t('catBtc'),    color: '#f7931a' },
+          { key: 'altcoin', label: t('catAlt'),    color: '#7dd4f7' },
+          { key: 'stock',   label: t('catStock'),  color: '#b8f77e' },
+          { key: 'gold',    label: t('catGold'),   color: '#f7d07a' },
+          { key: 'silver',  label: t('catSilver'), color: '#c0c0c0' },
+          { key: 'custom',  label: t('catCustom'), color: '#c87ef7' },
+        ];
+
+        const grouped = {};
+        allSlices.forEach((sl, i) => {
+          const type = sl.type || 'custom';
+          if (!grouped[type]) grouped[type] = [];
+          grouped[type].push({ ...sl, colorIdx: i });
+        });
+
+        let html = '';
+        categories.forEach(cat => {
+          const items = grouped[cat.key];
+          if (!items?.length) return;
+          const catTotal = items.filter(s => s.hasPrice).reduce((s, sl) => s + sl.value, 0);
+          const catPct   = total > 0 ? ((catTotal / total) * 100).toFixed(1) : '0.0';
+          html += `
+            <div style="display:flex;align-items:center;justify-content:space-between;
+                        padding:5px 0 3px;border-bottom:1px solid var(--border);margin-bottom:4px;">
+              <span style="font-size:9px;color:${cat.color};letter-spacing:.1em;text-transform:uppercase;font-weight:700;">${cat.label}</span>
+              <span style="font-size:9px;color:var(--muted);">${catPct} %</span>
+            </div>`;
+
+          items.forEach(sl => {
+            const pct = total > 0 ? ((sl.value / total) * 100).toFixed(1) : '0.0';
+            const col = this.colors[sl.colorIdx % this.colors.length];
+            const valStr = sl.hasPrice ? Fmt.fiat(sl.value, cur) : '⏳ Kurs lädt …';
+            html += `
+              <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;
+                          padding:3px 0 3px 8px;margin-bottom:2px;">
+                <div style="display:flex;align-items:center;gap:7px;min-width:0;">
+                  <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;
+                              background:${col};box-shadow:0 0 4px ${col};"></div>
+                  <span style="font-size:11px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${sl.label}</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+                  ${sl.hasPrice ? `<span style="font-size:9px;color:var(--muted);">${pct} %</span>` : ''}
+                  <span style="font-family:var(--terminal);font-size:13px;color:${sl.hasPrice ? col : 'var(--muted)'};">${valStr}</span>
+                </div>
+              </div>`;
+          });
+          html += `<div style="height:8px;"></div>`;
+        });
+
+        legend.innerHTML = html;
+
+        document.getElementById('portTotal').textContent = Fmt.fiat(total, cur);
+        document.getElementById('portChartUpdated').textContent = 'LIVE · ' + Fmt.time(new Date());
+      },
+    };
+
+    /* ─────────────────────────────────────────────
+       MODUL: Dashboard — BTC Netzwerk-Daten
+    ───────────────────────────────────────────── */
+    const Dashboard = {
+      loaded: false,
+
+      async init() {
+        if (this.loaded) return;
+        this.loaded = true;
+        // Alle Fetches unabhängig — ein Fehler blockiert nicht die anderen
+        await Promise.allSettled([
+          this.fetchHashrate(),
+          this.fetchMempoolStats(),
+          this.fetchNodes(),
+          this.fetchDominance(),
+          this.fetchExchangeReserves(),
+        ]);
+      },
+
+      /* BTC Dominanz via CoinGecko /global */
+      async fetchDominance() {
+        try {
+          const res  = await fetch('https://api.coingecko.com/api/v3/global');
+          const data = await res.json();
+          const dom  = data?.data?.market_cap_percentage?.btc;
+          if (dom == null) return;
+          document.getElementById('dashDominance').textContent =
+            dom.toFixed(1) + ' %';
+          document.getElementById('dashDomUpdated').textContent =
+            'CoinGecko · ' + new Date().toLocaleTimeString('de-DE');
+        } catch(e) {
+          document.getElementById('dashDominance').textContent = 'nicht verfügbar';
+        }
+      },
+
+      /* Handelbare BTC auf Börsen */
+      async fetchExchangeReserves() {
+        // Warte bis circulatingSupply aus dem Haupt-Preis-Fetch geladen ist (max 15s)
+        let waited = 0;
+        while (!state.circulatingSupply && waited < 15000) {
+          await new Promise(r => setTimeout(r, 500));
+          waited += 500;
+        }
+
+        if (!state.circulatingSupply) {
+          document.getElementById('dashExchBtc').textContent   = 'nicht verfügbar';
+          document.getElementById('dashExchValue').textContent = '—';
+          return;
+        }
+
+        // Schätzung: ~13 % der Umlaufmenge auf Spot-Börsen
+        // (Basis: Glassnode / CryptoQuant Durchschnitt 2024–2025)
+        const est = Math.round(state.circulatingSupply * 0.13);
+        this._showExchangeReserves(est, true);
+      },
+
+      _showExchangeReserves(btc, isEstimate = false) {
+        const cur      = state.currency === 'USD' ? 'USD' : 'EUR';
+        const priceUSD = state.priceUSD;
+        const priceEUR = state.priceEUR;
+        const price    = cur === 'USD' ? priceUSD : priceEUR;
+
+        document.getElementById('dashExchBtc').textContent =
+          (isEstimate ? '~' : '') + Math.round(btc).toLocaleString('de-DE') + ' BTC';
+
+        if (price) {
+          const totalVal = btc * price;
+          document.getElementById('dashExchValue').textContent = Fmt.fiat(totalVal, cur);
+        } else {
+          document.getElementById('dashExchValue').textContent = 'Preis lädt …';
+        }
+
+        document.getElementById('dashExchUpdated').textContent =
+          (isEstimate ? '~13 % des Umlaufs (Schätzung) · ' : 'CoinGlass · ') +
+          new Date().toLocaleTimeString('de-DE');
+      },
+
+      fetchWithTimeout(url, ms = 10000) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), ms);
+        return fetch(url, { signal: ctrl.signal })
+          .then(res => { clearTimeout(timer); return res; })
+          .catch(err => { clearTimeout(timer); throw err; });
+      },
+
+      /* Hashrate + Block + Difficulty via mempool.space */
+      async fetchHashrate() {
+        try {
+          const res  = await this.fetchWithTimeout('https://mempool.space/api/v1/mining/hashrate/1d');
+          const data = await res.json();
+          const ehs  = data.currentHashrate / 1e18;
+          document.getElementById('dashHashrate').textContent =
+            ehs.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          document.getElementById('dashHashrateUpdated').textContent =
+            'mempool.space · ' + new Date().toLocaleTimeString('de-DE');
+        } catch(e) {
+          document.getElementById('dashHashrate').textContent = 'nicht verfügbar';
+        }
+      },
+
+      /* Block-Höhe + Difficulty-Anpassung + Mempool via mempool.space */
+      async fetchMempoolStats() {
+        try {
+          // Block-Höhe
+          const blockRes   = await this.fetchWithTimeout('https://mempool.space/api/blocks/tip/height');
+          const blockHeight = await blockRes.json();
+          state.blockHeight = blockHeight;
+          document.getElementById('dashBlockHeight').textContent =
+            blockHeight.toLocaleString('de-DE');
+
+          // Difficulty-Anpassung
+          const diffRes  = await this.fetchWithTimeout('https://mempool.space/api/v1/difficulty-adjustment');
+          const diffData = await diffRes.json();
+          const pct      = diffData.difficultyChange?.toFixed(2) ?? '—';
+          const blocks   = diffData.remainingBlocks ?? '—';
+          // remainingTime kommt in Millisekunden → durch 86400000 teilen
+          const days = diffData.remainingTime
+            ? (diffData.remainingTime / 86400000).toFixed(1)
+            : '—';
+          const sign     = parseFloat(pct) >= 0 ? '+' : '';
+          document.getElementById('dashDifficulty').textContent  = sign + pct + ' %';
+          document.getElementById('dashDifficulty').style.color  =
+            parseFloat(pct) >= 0 ? 'var(--orange)' : 'var(--green)';
+          document.getElementById('dashDiffSub').textContent =
+            'in ' + blocks + ' Blöcken (~' + days + ' Tage)';
+
+          // Mempool-Transaktionen
+          const mempoolRes  = await this.fetchWithTimeout('https://mempool.space/api/mempool');
+          const mempoolData = await mempoolRes.json();
+          document.getElementById('dashMempool').textContent =
+            (mempoolData.count ?? 0).toLocaleString('de-DE');
+          document.getElementById('dashMempoolSub').textContent =
+            'mempool.space · ' + new Date().toLocaleTimeString('de-DE');
+
+        } catch(e) {
+          console.error('Mempool-Stats Fehler:', e);
+        }
+      },
+
+      /* Hilfsfunktion: parsed CORS-Proxy Antwort (raw oder { contents: "..." }) */
+      async parseProxyResponse(res) {
+        const text = await res.text();
+        try {
+          const json = JSON.parse(text);
+          // corsproxy.io / allorigins geben manchmal { contents: "..." } zurück
+          if (typeof json.contents === 'string') return JSON.parse(json.contents);
+          return json;
+        } catch {
+          return {};
+        }
+      },
+
+      /* Nodes via mehrere Proxies → bitnodes.io */
+      async fetchNodes() {
+        // Sofort Schätzwert zeigen — nie auf "wird geladen" hängen
+        document.getElementById('dashNodes').textContent = '~20.000';
+        document.getElementById('dashNodesUpdated').textContent =
+          'Schätzwert · bitnodes.io wird geladen …';
+
+        const bitnodes = 'https://bitnodes.io/api/v1/snapshots/?limit=1';
+        const proxies  = [
+          'https://corsproxy.io/?url=',
+          'https://api.allorigins.win/get?url=',
+        ];
+
+        let total = 0;
+
+        // Direkt versuchen
+        try {
+          const res  = await this.fetchWithTimeout(bitnodes, 5000);
+          const data = await res.json();
+          total = data.results?.[0]?.total_nodes ?? 0;
+        } catch {}
+
+        // Proxies versuchen
+        if (!total) {
+          for (const proxy of proxies) {
+            try {
+              const res  = await this.fetchWithTimeout(proxy + encodeURIComponent(bitnodes), 6000);
+              const data = await this.parseProxyResponse(res);
+              total = data.results?.[0]?.total_nodes ?? 0;
+              if (total > 1000) break;
+            } catch {}
+          }
+        }
+
+        if (total > 1000) {
+          document.getElementById('dashNodes').textContent =
+            total.toLocaleString('de-DE');
+          document.getElementById('dashNodesUpdated').textContent =
+            'bitnodes.io · ' + new Date().toLocaleTimeString('de-DE');
+          this.fetchNodeBreakdown(total);
+        } else {
+          // Statischer Fallback bleibt — bitnodes nicht erreichbar
+          document.getElementById('dashNodesUpdated').textContent =
+            'Schätzwert · bitnodes.io nicht erreichbar';
+        }
+      },
+
+      async fetchNodeBreakdown(total) {
+        const url    = 'https://bitnodes.io/api/v1/nodes/?limit=100';
+        const proxies = ['https://corsproxy.io/?url=', 'https://api.allorigins.win/get?url='];
+        let nodesData = null;
+
+        for (const proxy of proxies) {
+          try {
+            const res = await this.fetchWithTimeout(proxy + encodeURIComponent(url), 8000);
+            const d   = await this.parseProxyResponse(res);
+            if (d.results?.length) { nodesData = d; break; }
+          } catch {}
+        }
+
+        if (!nodesData?.results?.length) return;
+
+        let core = 0, knots = 0, other = 0;
+        nodesData.results.forEach(node => {
+          const ua = (node.user_agent || '').toLowerCase();
+          if      (ua.includes('knots'))   knots++;
+          else if (ua.includes('satoshi')) core++;
+          else                             other++;
+        });
+
+        const sample = nodesData.results.length;
+        const scale  = total / sample;
+        const fmt = n => {
+          const est = Math.round(n * scale);
+          const pct = ((est / total) * 100).toFixed(1);
+          return '~' + est.toLocaleString('de-DE') + ' (' + pct + ' %)';
+        };
+        document.getElementById('dashCore').textContent  = fmt(core);
+        document.getElementById('dashKnots').textContent = fmt(knots);
+        document.getElementById('dashOther').textContent = fmt(other);
+        document.getElementById('dashBreakdown').style.display = 'flex';
+      },
+
+    };
+
+    /* ─────────────────────────────────────────────
+       MODUL: Sparrechner
+       Sparrate → % Stack nach 1 Monat und 1 Jahr
+    ───────────────────────────────────────────── */
+    const SavingsCalc = {
+
+      render() {
+        const amountRaw = (document.getElementById('savingsInput')?.value || '')
+                           .replace(/[^0-9.,]/g,'').replace(',','.');
+        const amount    = parseFloat(amountRaw) || 0;
+        const cur       = document.getElementById('savingsCurrency')?.value || 'EUR';
+        const { btcHolding, priceEUR, priceUSD } = state;
+        const price     = cur === 'USD' ? priceUSD : priceEUR;
+        const body      = document.getElementById('savingsTableBody');
+
+        document.getElementById('savingsTh').textContent = '% DES STACKS';
+
+        if (!amount || !price || !btcHolding) {
+          body.innerHTML = `<div class="placeholder"><span class="live-dot"></span>${
+            !btcHolding ? 'Bestand auf Seite 1 eingeben …' : 'Sparrate eingeben …'
+          }</div>`;
+          return;
+        }
+
+        // Berechnung: Sparrate ÷ Kurs = BTC
+        const btcMonth = amount / price;          // BTC nach 1 Monat
+        const btcYear  = amount * 12 / price;     // BTC nach 1 Jahr (12 × Monatsrate)
+
+        const pctMonth = (btcMonth / btcHolding) * 100;
+        const pctYear  = (btcYear  / btcHolding) * 100;
+
+        const fmtPct = v => (v < 0.01 ? v.toFixed(4) : v.toFixed(2)) + ' %';
+
+        const row = (label, sublabel, btc, pct, fiatVal) => `
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;
+                      padding:16px 14px;border-bottom:1px solid var(--border);
+                      animation:fadeIn .3s ease both;">
+            <div>
+              <div style="font-family:var(--terminal);font-size:20px;color:var(--orange);">${label}</div>
+              <div style="font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:.06em;">${sublabel}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;font-weight:700;color:var(--text);">${Fmt.btc(btc)}</div>
+              <div style="font-size:9px;color:var(--muted);margin-top:2px;">BTC</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:var(--terminal);font-size:18px;color:var(--green);
+                          text-shadow:0 0 6px rgba(57,211,83,.35);">+${fmtPct(pct)}</div>
+              <div style="font-size:9px;color:var(--muted);margin-top:2px;">${Fmt.fiat(fiatVal, cur)}</div>
+            </div>
+          </div>`;
+
+        body.innerHTML =
+          row('1 MONAT', Fmt.fiat(amount, cur) + ' einmalig', btcMonth, pctMonth, amount) +
+          row('1 JAHR',  Fmt.fiat(amount * 12, cur) + ' gesamt', btcYear, pctYear, amount * 12);
+      },
+    };
+
+    /* ── Kategorienamen für Legende ── */
+    function t(key) {
+      const de = {
+        catBtc: '₿ Bitcoin', catAlt: '🪙 Altcoins', catStock: '📈 Aktien / ETF',
+        catGold: '🥇 Gold', catSilver: '🥈 Silber', catCustom: '✏️ Eigene',
+        methBtn: 'wie berechnet? ›', methClose: 'schließen ✕',
+      };
+      return de[key] ?? key;
+    }
 
     function toggleMeth() {
       const body = document.getElementById('methBody');
@@ -1197,10 +3401,24 @@
 
     function setCurrency(c) {
       state.currency = c;
-      UI.updateToggle(); UI.updateTicker(); UI.renderTable();
+      UI.updateToggle();
+      UI.updateTicker();
+      UI.updatePortfolioValue();
+      UI.renderTable();
+      SavingsCalc.render();
+      Portfolio.render();
+      Portfolio.updateMetalPriceInfo();
     }
 
-    App.init();
+    App.init().then(() => {
+      // Block-Höhe für Halving-Countdown — falls noch nicht durch Dashboard geladen
+      if (!state.blockHeight) {
+        fetch('https://mempool.space/api/blocks/tip/height')
+          .then(r => r.json())
+          .then(h => { state.blockHeight = h; UI.updateHalving(); })
+          .catch(() => {});
+      }
+    });
   </script>
 </body>
 </html>
