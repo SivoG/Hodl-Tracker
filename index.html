@@ -1154,7 +1154,8 @@
     <button class="nav-btn" id="navBtn4" onclick="setPage(4)">
       <span class="nav-btn-label">NETZWERK</span>
     </button>
-  </div>
+    <button class="nav-btn" id="navBtn5" onclick="setPage(5)">
+      <span class="nav-btn-label">HODL</span>
     </button>
   </div>
 
@@ -1180,10 +1181,72 @@
     <div class="error-inner" id="errorMsg"></div>
   </div>
 
-  <!-- ─── PORTFOLIO WERT ─── -->
-  <div class="portfolio-value-bar">
-    <div class="pv-label" data-i18n="pvLabel">Mein Stack ist aktuell</div>
-    <div class="pv-value empty" id="pvValue">—</div>
+  <!-- ─── PORTFOLIO WERT + P&L ─── -->
+  <div class="portfolio-value-bar" style="flex-direction:column;align-items:stretch;gap:0;">
+    <!-- Zeile 1: Stack-Wert -->
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="pv-label" data-i18n="pvLabel">Mein Stack ist aktuell</div>
+      <div class="pv-value empty" id="pvValue">—</div>
+    </div>
+    <!-- Zeile 2: P&L — nur sichtbar wenn Kaufpreis eingetragen -->
+    <div id="pvPnlRow" style="display:none;margin-top:10px;padding-top:10px;
+         border-top:1px solid var(--border);
+         display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">
+        SEIT KAUF
+      </div>
+      <div style="font-family:var(--terminal);font-size:22px;line-height:1;" id="pvPnlAbs">—</div>
+      <div style="font-family:var(--terminal);font-size:22px;line-height:1;
+                  background:var(--bg);border-radius:6px;padding:3px 10px;" id="pvPnlPct">—</div>
+    </div>
+  </div>
+
+  <!-- ─── P&L — kollabierbar ─── -->
+  <div style="width:calc(100% - 32px);max-width:488px;margin:10px 16px 0;">
+    <button onclick="PnL.togglePanel()" id="pnlToggleBtn"
+      style="width:100%;display:flex;align-items:center;justify-content:space-between;
+             background:var(--surface);border:1px solid var(--border2);
+             border-left:3px solid var(--orange-dim);
+             border-radius:var(--radius);padding:12px 16px;cursor:pointer;
+             transition:border-color .15s;"
+      onmouseover="this.style.borderLeftColor='var(--orange)';"
+      onmouseout="this.style.borderLeftColor='var(--orange-dim)';">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:9px;color:var(--orange-dim);">//</span>
+        <span style="font-family:var(--mono);font-size:11px;font-weight:700;
+                     color:var(--muted);letter-spacing:.06em;text-transform:uppercase;">
+          Kaufpreis eintragen
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-family:var(--terminal);font-size:16px;color:var(--orange);" id="pnlBannerValue"></span>
+        <span style="font-family:var(--terminal);font-size:16px;color:var(--muted);" id="pnlArrow">›</span>
+      </div>
+    </button>
+    <div id="pnlPanel" style="overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1);">
+      <div style="background:var(--surface);border:1px solid var(--border2);border-top:none;
+                  border-radius:0 0 var(--radius) var(--radius);overflow:hidden;">
+        <div style="padding:16px 18px;">
+          <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">
+            <span style="color:var(--orange-dim);">> </span>Durchschn. Kaufpreis
+          </div>
+          <div style="display:flex;gap:8px;">
+            <input id="pnlInput" type="text" inputmode="decimal" placeholder="z.B. 45.000"
+              style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                     color:var(--text);font-family:var(--terminal);font-size:26px;
+                     padding:8px 12px 6px;outline:none;transition:border-color .2s;"
+              onfocus="this.style.borderColor='var(--orange)'"
+              onblur="this.style.borderColor='var(--border2)'" />
+            <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+                        color:var(--muted);font-family:var(--terminal);font-size:16px;
+                        padding:8px 12px;white-space:nowrap;" id="pnlCurrencyLabel">EUR</div>
+          </div>
+          <div style="font-size:9px;color:var(--muted2);margin-top:8px;letter-spacing:.04em;">
+            Auswertung erscheint im Stack-Banner oben
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ─── INPUT ─── -->
@@ -1194,6 +1257,16 @@
         placeholder="0.00000000" inputmode="decimal" autocomplete="off"
         data-i18n-ph="btcPlaceholder" />
       <div class="input-unit">BTC</div>
+    </div>
+    <!-- Sats Card -->
+    <div id="satsCard" style="display:none;margin-top:12px;padding-top:12px;
+         border-top:1px solid var(--border);">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;">
+        DEIN STACK IN SATOSHIS
+      </div>
+      <div style="font-family:var(--terminal);font-size:36px;line-height:1;
+                  color:var(--green);text-shadow:0 0 16px rgba(61,214,88,.45);
+                  letter-spacing:1px;" id="satsValue">—</div>
     </div>
   </div>
 
@@ -1773,6 +1846,93 @@
 
   </div><!-- end page4 -->
 
+  <!-- ══════════════════════════════════════════
+       PAGE 5 — HODL TIMER
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page5">
+
+    <!-- Adress-Eingabe -->
+    <div class="card">
+      <div style="font-size:9px;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">
+        <span style="color:var(--orange);">> </span>Bitcoin-Adressen eingeben
+      </div>
+      <div id="hodlAddressInputs" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:8px;" id="hodlAddrRow0">
+          <input type="text" class="hodl-addr-input" placeholder="bc1q… oder 1… oder 3…"
+            style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--text);font-family:var(--mono);font-size:11px;
+                   padding:9px 12px;outline:none;letter-spacing:.04em;" />
+          <button onclick="HodlTimer.removeAddr(0)"
+            id="hodlRemove0"
+            style="display:none;background:none;border:1px solid var(--muted2);border-radius:8px;color:var(--muted);font-size:12px;padding:9px 12px;cursor:pointer;">✕</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button onclick="HodlTimer.addAddrField()"
+          style="flex:1;background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+                 color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:700;
+                 padding:9px;cursor:pointer;letter-spacing:.04em;transition:all .15s;"
+          onmouseover="this.style.borderColor='var(--green-dim)';this.style.color='var(--green)';"
+          onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)';">
+          + ADRESSE HINZUFÜGEN
+        </button>
+        <button onclick="HodlTimer.load()"
+          style="flex:1;background:var(--green-dim);border:1px solid var(--green-dim);border-radius:8px;
+                 color:var(--green);font-family:var(--terminal);font-size:18px;letter-spacing:1px;
+                 padding:9px;cursor:pointer;transition:all .15s;"
+          onmouseover="this.style.background='var(--green)';this.style.color='#000';"
+          onmouseout="this.style.background='var(--green-dim)';this.style.color='var(--green)';">
+          LADEN
+        </button>
+      </div>
+      <div style="font-size:9px;color:var(--muted2);margin-top:10px;letter-spacing:.04em;">
+        Daten via mempool.space · Adressen werden nur abgefragt, nicht gespeichert
+      </div>
+    </div>
+
+    <!-- Status / Ladeindikator -->
+    <div id="hodlStatus" style="display:none;width:calc(100% - 32px);max-width:488px;
+         margin:10px 16px 0;padding:12px 16px;background:var(--surface);
+         border:1px solid var(--border2);border-radius:var(--radius);
+         font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;">
+    </div>
+
+    <!-- Zusammenfassung -->
+    <div id="hodlSummary" style="display:none;" class="card">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;">
+        <span style="color:var(--green-dim);">// </span>Zusammenfassung
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+        <div style="font-size:11px;color:var(--muted);">Gesamt-BTC</div>
+        <div style="font-family:var(--terminal);font-size:28px;color:var(--orange);
+                    text-shadow:0 0 12px rgba(247,147,26,.4);" id="hodlTotalBtc">—</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+        <div style="font-size:11px;color:var(--muted);">Ältester UTXO</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--green);" id="hodlOldest">—</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div style="font-size:11px;color:var(--muted);">Ø Haltezeit (gewichtet)</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text);" id="hodlAvg">—</div>
+      </div>
+    </div>
+
+    <!-- UTXO-Liste -->
+    <div id="hodlUtxoList" style="display:none;width:calc(100% - 32px);max-width:488px;
+         margin:10px 16px 0;background:var(--surface);border:1px solid var(--border2);
+         border-radius:var(--radius);overflow:hidden;">
+      <div style="display:flex;justify-content:space-between;align-items:center;
+                  padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border2);">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;">
+          <span style="color:var(--green-dim);">// </span>UTXOs — älteste zuerst
+        </div>
+        <div style="font-size:9px;color:var(--muted2);" id="hodlUtxoCount"></div>
+      </div>
+      <div id="hodlUtxoBody"></div>
+    </div>
+
+  </div><!-- end page5 -->
+
   <footer>
     <span>//</span> Preise: CoinGecko API (Fallback: Binance)
     &nbsp;·&nbsp; Ranking: BitInfoCharts + Chainalysis <span>//</span><br>
@@ -2340,6 +2500,348 @@
     };
 
     /* ── App ── */
+
+    /* ═══════════════════════════════════════════════════
+       MODUL: P&L + Sats-Anzeige
+    ═══════════════════════════════════════════════════ */
+    const PnL = {
+
+      panelOpen: false,
+
+      togglePanel() {
+        this.panelOpen = !this.panelOpen;
+        const panel = document.getElementById('pnlPanel');
+        const arrow = document.getElementById('pnlArrow');
+        if (this.panelOpen) {
+          panel.style.maxHeight = panel.scrollHeight + 600 + 'px';
+          arrow.textContent = '↑';
+        } else {
+          panel.style.maxHeight = '0px';
+          arrow.textContent = '›';
+        }
+      },
+
+      init() {
+        const input = document.getElementById('pnlInput');
+        if (!input) return;
+        const saved = localStorage.getItem('hodl_buyprice');
+        if (saved) input.value = saved;
+        input.addEventListener('input', () => {
+          localStorage.setItem('hodl_buyprice', input.value);
+          this.render();
+        });
+        this.render();
+      },
+
+      render() {
+        const { btcHolding, priceEUR, priceUSD, currency } = state;
+        const cur   = currency === 'USD' ? 'USD' : 'EUR';
+        const price = cur === 'USD' ? priceUSD : priceEUR;
+
+        // ── Sats Card ──
+        const satsCard = document.getElementById('satsCard');
+        const satsVal  = document.getElementById('satsValue');
+        if (btcHolding > 0) {
+          satsCard.style.display = 'block';
+          satsVal.textContent    = Math.round(btcHolding * 1e8).toLocaleString('de-DE') + ' SAT';
+        } else {
+          satsCard.style.display = 'none';
+        }
+
+        // ── Währungs-Label im Eingabefeld ──
+        const currLabel = document.getElementById('pnlCurrencyLabel');
+        if (currLabel) currLabel.textContent = cur;
+
+        const rawBuy   = (document.getElementById('pnlInput')?.value || '')
+                           .replace(/[^0-9.,]/g,'').replace(',','.');
+        const buyPrice = parseFloat(rawBuy) || 0;
+
+        const pnlRow   = document.getElementById('pvPnlRow');
+        const bannerVal = document.getElementById('pnlBannerValue');
+
+        if (!btcHolding || !buyPrice || !price) {
+          if (pnlRow)    pnlRow.style.display    = 'none';
+          if (bannerVal) bannerVal.textContent    = '';
+          return;
+        }
+
+        const costBasis  = btcHolding * buyPrice;
+        const currentVal = btcHolding * price;
+        const absolute   = currentVal - costBasis;
+        const pct        = (absolute / costBasis) * 100;
+        const isUp       = absolute >= 0;
+        const color      = isUp ? '#3dd658' : '#e8445a';
+        const shadow     = isUp ? 'rgba(61,214,88,.55)' : 'rgba(232,68,90,.55)';
+        const sign       = isUp ? '+' : '';
+
+        // P&L in Stack-Banner schreiben
+        if (pnlRow) {
+          pnlRow.style.display = 'grid';
+          const absEl = document.getElementById('pvPnlAbs');
+          const pctEl = document.getElementById('pvPnlPct');
+          absEl.textContent      = sign + Fmt.fiat(absolute, cur);
+          absEl.style.color      = color;
+          absEl.style.textShadow = `0 0 14px ${shadow}`;
+          pctEl.textContent      = sign + pct.toFixed(2) + ' %';
+          pctEl.style.color      = color;
+          pctEl.style.border     = `1px solid ${color}44`;
+          pctEl.style.textShadow = `0 0 10px ${shadow}`;
+        }
+
+        // Banner-Toggle Vorschau
+        if (bannerVal) {
+          bannerVal.textContent = sign + pct.toFixed(1) + ' %';
+          bannerVal.style.color = color;
+        }
+      },
+    };
+
+    /* ═══════════════════════════════════════════════════
+       MODUL: HODL TIMER — UTXO Haltezeit pro Adresse
+    ═══════════════════════════════════════════════════ */
+    const HodlTimer = {
+
+      addrCount: 1,
+      utxos:     [],
+      timerRef:  null,
+      _restored: false,
+
+      /* Weiteres Adressfeld hinzufügen */
+      addAddrField() {
+        const wrap = document.getElementById('hodlAddressInputs');
+        const idx  = this.addrCount++;
+        const row  = document.createElement('div');
+        row.id     = `hodlAddrRow${idx}`;
+        row.style.cssText = 'display:flex;gap:8px;';
+        row.innerHTML = `
+          <input type="text" class="hodl-addr-input"
+            placeholder="bc1q… oder 1… oder 3…"
+            style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--text);font-family:var(--mono);font-size:11px;
+                   padding:9px 12px;outline:none;letter-spacing:.04em;" />
+          <button onclick="HodlTimer.removeAddr(${idx})"
+            style="background:none;border:1px solid var(--muted2);border-radius:8px;
+                   color:var(--muted);font-size:12px;padding:9px 12px;cursor:pointer;
+                   transition:all .15s;"
+            onmouseover="this.style.borderColor='#e8445a';this.style.color='#e8445a';"
+            onmouseout="this.style.borderColor='var(--muted2)';this.style.color='var(--muted)';">✕</button>`;
+        wrap.appendChild(row);
+      },
+
+      /* Adressfeld entfernen */
+      removeAddr(idx) {
+        const row = document.getElementById(`hodlAddrRow${idx}`);
+        if (row) row.remove();
+      },
+
+      /* Alle Adressen auslesen */
+      getAddresses() {
+        return [...document.querySelectorAll('.hodl-addr-input')]
+          .map(el => el.value.trim())
+          .filter(a => a.length > 10);
+      },
+
+      /* Zeitdifferenz formatieren */
+      fmtDuration(ms) {
+        const totalSec = Math.floor(ms / 1000);
+        const sec  = totalSec % 60;
+        const min  = Math.floor(totalSec / 60) % 60;
+        const hr   = Math.floor(totalSec / 3600) % 24;
+        const days = Math.floor(totalSec / 86400) % 30;
+        const mon  = Math.floor(totalSec / (86400 * 30)) % 12;
+        const yr   = Math.floor(totalSec / (86400 * 365));
+        const pad  = n => String(n).padStart(2,'0');
+        let s = '';
+        if (yr  > 0) s += `${yr}J `;
+        if (mon > 0) s += `${mon}M `;
+        if (days> 0) s += `${days}T `;
+        s += `${pad(hr)}:${pad(min)}:${pad(sec)}`;
+        return s.trim();
+      },
+
+      /* Status anzeigen */
+      showStatus(msg, color = 'var(--muted)') {
+        const el = document.getElementById('hodlStatus');
+        el.style.display = 'block';
+        el.style.color   = color;
+        el.innerHTML     = msg;
+      },
+
+      /* Adressen in localStorage speichern */
+      saveAddresses() {
+        const addrs = this.getAddresses();
+        localStorage.setItem('hodl_addresses', JSON.stringify(addrs));
+      },
+
+      /* Adressen aus localStorage wiederherstellen */
+      restoreAddresses() {
+        try {
+          const saved = JSON.parse(localStorage.getItem('hodl_addresses') || '[]');
+          if (!saved.length) return;
+
+          const wrap = document.getElementById('hodlAddressInputs');
+          // Erste Adresse ins bestehende Feld
+          const firstInput = wrap.querySelector('.hodl-addr-input');
+          if (firstInput) firstInput.value = saved[0];
+
+          // Weitere Adressen als neue Felder
+          saved.slice(1).forEach(addr => {
+            this.addAddrField();
+            const inputs = wrap.querySelectorAll('.hodl-addr-input');
+            inputs[inputs.length - 1].value = addr;
+          });
+        } catch {}
+      },
+
+      /* UTXOs laden */
+      async load() {
+        const addrs = this.getAddresses();
+        if (!addrs.length) {
+          this.showStatus('⚠ Bitte mindestens eine Adresse eingeben.', 'var(--down)');
+          return;
+        }
+
+        // Adressen speichern
+        this.saveAddresses();
+
+        // Timer stoppen falls aktiv
+        if (this.timerRef) clearInterval(this.timerRef);
+        this.utxos = [];
+
+        // UI zurücksetzen
+        document.getElementById('hodlSummary').style.display  = 'none';
+        document.getElementById('hodlUtxoList').style.display = 'none';
+        this.showStatus('<span class="live-dot"></span>Lade UTXOs von mempool.space …', 'var(--muted)');
+
+        // UTXOs für alle Adressen holen
+        let errors = 0;
+        for (const addr of addrs) {
+          try {
+            const res  = await fetch(`https://mempool.space/api/address/${addr}/utxo`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            data.forEach(u => {
+              if (u.status?.confirmed && u.status?.block_time) {
+                this.utxos.push({
+                  btc:       u.value / 1e8,
+                  timestamp: u.status.block_time * 1000, // ms
+                  addr:      addr.slice(0,8) + '…' + addr.slice(-4),
+                  txid:      u.txid,
+                });
+              }
+            });
+          } catch(e) {
+            errors++;
+            this.showStatus(`⚠ Fehler bei ${addr.slice(0,12)}…: ${e.message}`, 'var(--down)');
+          }
+        }
+
+        if (!this.utxos.length) {
+          this.showStatus('Keine bestätigten UTXOs gefunden.', 'var(--muted)');
+          return;
+        }
+
+        // Sortieren: älteste zuerst
+        this.utxos.sort((a, b) => a.timestamp - b.timestamp);
+
+        document.getElementById('hodlStatus').style.display = 'none';
+        this.renderSummary();
+        this.renderList();
+
+        // Live-Timer starten
+        this.timerRef = setInterval(() => this.updateTimers(), 1000);
+      },
+
+      /* Zusammenfassung rendern */
+      renderSummary() {
+        const totalBtc = this.utxos.reduce((s, u) => s + u.btc, 0);
+        const oldest   = this.utxos[0];
+        const now      = Date.now();
+
+        // Gewichteter Durchschnitt
+        const weightedMs = this.utxos.reduce((s, u) => s + (now - u.timestamp) * u.btc, 0);
+        const avgMs      = weightedMs / totalBtc;
+
+        document.getElementById('hodlTotalBtc').textContent =
+          totalBtc.toFixed(8) + ' BTC';
+        document.getElementById('hodlOldest').textContent =
+          this.fmtDuration(now - oldest.timestamp);
+        document.getElementById('hodlAvg').textContent =
+          this.fmtDuration(avgMs);
+        document.getElementById('hodlSummary').style.display = 'block';
+      },
+
+      /* UTXO-Liste rendern */
+      renderList() {
+        const body = document.getElementById('hodlUtxoBody');
+        const now  = Date.now();
+
+        document.getElementById('hodlUtxoCount').textContent =
+          this.utxos.length + ' UTXOs';
+
+        body.innerHTML = this.utxos.map((u, i) => {
+          const date = new Date(u.timestamp).toLocaleDateString('de-DE', {
+            day:'2-digit', month:'2-digit', year:'numeric'
+          });
+          const now    = Date.now();
+          const ageMs  = now - u.timestamp;
+          const years  = Math.floor(ageMs / (86400000 * 365));
+          // Farbe nach Alter: jung = blau, mittel = grün, alt = orange/gold
+          const ageColor = years >= 2 ? '#f7d07a'
+                         : years >= 1 ? '#3dd658'
+                         : '#7dd4f7';
+
+          return `<div style="display:flex;align-items:center;justify-content:space-between;
+                               padding:14px 16px;border-bottom:1px solid var(--border);
+                               gap:12px;" id="hodlRow${i}">
+            <!-- Links: BTC + Adresse -->
+            <div style="display:flex;flex-direction:column;gap:4px;min-width:0;">
+              <div style="font-family:var(--terminal);font-size:22px;color:var(--orange);
+                          text-shadow:0 0 8px rgba(247,147,26,.35);line-height:1;">
+                ${u.btc.toFixed(8)} <span style="font-size:14px;color:var(--orange-dim);">BTC</span>
+              </div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.04em;">
+                ${u.addr} &nbsp;·&nbsp; seit ${date}
+              </div>
+            </div>
+            <!-- Rechts: Timer -->
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">
+              <div style="font-family:var(--terminal);font-size:26px;line-height:1;
+                          color:${ageColor};
+                          text-shadow:0 0 14px ${ageColor}88;
+                          letter-spacing:1px;"
+                   id="hodlTimer${i}">
+                ${this.fmtDuration(ageMs)}
+              </div>
+              <div style="font-family:var(--mono);font-size:8px;color:var(--muted2);letter-spacing:.06em;text-transform:uppercase;">
+                HODL-DAUER
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+
+        document.getElementById('hodlUtxoList').style.display = 'block';
+      },
+
+      /* Alle Timer jede Sekunde updaten */
+      updateTimers() {
+        const now = Date.now();
+        // Zusammenfassung updaten
+        if (this.utxos.length) {
+          document.getElementById('hodlOldest').textContent =
+            this.fmtDuration(now - this.utxos[0].timestamp);
+          const totalBtc   = this.utxos.reduce((s, u) => s + u.btc, 0);
+          const weightedMs = this.utxos.reduce((s, u) => s + (now - u.timestamp) * u.btc, 0);
+          document.getElementById('hodlAvg').textContent =
+            this.fmtDuration(weightedMs / totalBtc);
+        }
+        // Jede Zeile updaten
+        this.utxos.forEach((u, i) => {
+          const el = document.getElementById(`hodlTimer${i}`);
+          if (el) el.textContent = this.fmtDuration(now - u.timestamp);
+        });
+      },
+    };
     const App = {
       async init() {
         // localStorage: Bestand beim Laden wiederherstellen
@@ -2384,14 +2886,15 @@
           UI.updateMaxHolders();
           UI.renderRanking();
           UI.renderTable();
+          PnL.render();
         });
 
         // Sparrechner Events
         document.getElementById('savingsInput')?.addEventListener('input', () => SavingsCalc.render());
         document.getElementById('savingsCurrency')?.addEventListener('change', () => SavingsCalc.render());
 
-        // Portfolio ZUERST laden — damit Altcoin/Stock-IDs beim ersten refresh bekannt sind
         Portfolio.init();
+        PnL.init();
 
         await this.refresh();
         setInterval(() => this.refresh(), CONFIG.refreshInterval);
@@ -2406,6 +2909,7 @@
             ...(d.circulatingSupply ? { circulatingSupply: d.circulatingSupply } : {}),
           });
           UI.hideError(); UI.updateTicker(); UI.updatePortfolioValue(); UI.updateMaxHolders(); UI.renderRanking(); UI.renderTable();
+          PnL.render();
           SavingsCalc.render();
           Portfolio.render();
           Portfolio.updateMetalPriceInfo();
@@ -2425,13 +2929,22 @@
        MODUL: Navigation — 4 Seiten
     ───────────────────────────────────────────── */
     function setPage(n) {
-      [1,2,3,4].forEach(i => {
+      [1,2,3,4,5].forEach(i => {
         document.getElementById(`page${i}`).classList.toggle('active', i === n);
         document.getElementById(`navBtn${i}`).classList.toggle('active', i === n);
       });
       if (n === 2) { UI.renderTable(); SavingsCalc.render(); }
       if (n === 3) Portfolio.render();
       if (n === 4) Dashboard.init();
+      if (n === 5 && !HodlTimer._restored) {
+        HodlTimer._restored = true;
+        HodlTimer.restoreAddresses();
+        // Automatisch laden wenn gespeicherte Adressen vorhanden
+        const saved = localStorage.getItem('hodl_addresses');
+        if (saved && JSON.parse(saved).length) {
+          setTimeout(() => HodlTimer.load(), 300);
+        }
+      }
     }
 
     /* ─────────────────────────────────────────────
