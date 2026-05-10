@@ -83,6 +83,9 @@
       box-shadow: inset 0 0 24px var(--glow-g), 0 4px 16px rgba(0,0,0,.55);
       position: relative;
     }
+    @media (max-width: 420px) {
+      .card { width: calc(100% - 20px); margin: 8px 10px 0; padding: 16px; }
+    }
 
     /* ═══════════════════════════════════════════
        HEADER
@@ -319,9 +322,10 @@
       content: '> ';
       color: var(--orange);
     }
-    .input-row { display: flex; gap: 10px; }
+    .input-row { display: flex; gap: 8px; align-items: stretch; }
     .btc-input {
       flex: 1;
+      min-width: 0; /* critical: allows flex child to shrink below content size */
       background: var(--bg);
       border: 1px solid var(--border2);
       border-radius: 8px;
@@ -334,6 +338,9 @@
       transition: border-color .2s, box-shadow .2s;
       -moz-appearance: textfield;
       caret-color: var(--green);
+    }
+    @media (max-width: 420px) {
+      .btc-input { font-size: 24px; padding: 8px 10px 6px; }
     }
     .btc-input::-webkit-outer-spin-button,
     .btc-input::-webkit-inner-spin-button { -webkit-appearance: none; }
@@ -349,10 +356,14 @@
       font-size: 22px;
       letter-spacing: 1px;
       border-radius: 8px;
-      padding: 10px 16px 8px;
+      padding: 10px 14px 8px;
       display: flex;
       align-items: center;
+      flex-shrink: 0; /* never shrink the BTC button */
       box-shadow: 0 0 12px var(--glow-o);
+    }
+    @media (max-width: 420px) {
+      .input-unit { font-size: 18px; padding: 8px 12px 6px; }
     }
 
     /* ═══════════════════════════════════════════
@@ -373,11 +384,14 @@
       margin-bottom: 4px;
     }
     .rank-hero-label {
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: .12em;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: .14em;
       text-transform: uppercase;
       margin-bottom: 3px;
+      text-shadow: 0 0 8px rgba(61,214,88,.3);
     }
     .rank-hero-label::before { content: '// '; color: var(--green-dim); }
     .rank-hero-number {
@@ -964,7 +978,6 @@
     .page { display: none; width: 100%; flex-direction: column; align-items: center; }
     .page.active { display: flex; }
 
-    /* ── Dashboard Cards — Monitoring Panel ── */
     .dash-card {
       width: calc(100% - 32px);
       max-width: 488px;
@@ -991,14 +1004,24 @@
     }
     .dash-label {
       font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: .16em;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: .14em;
       text-transform: uppercase;
       margin-bottom: 8px;
+      text-shadow: 0 0 8px rgba(61,214,88,.3);
       position: relative;
     }
     .dash-label::before { content: '// '; color: var(--green-dim); }
+
+    /* Mobile: Canvas-Animationen auf Seite 4 skalieren */
+    @media (max-width: 420px) {
+      .dash-anim-wrap { width: 85px !important; }
+    }
+    @media (max-width: 360px) {
+      .dash-anim-wrap { display: none !important; }
+    }
     .dash-value {
       font-family: var(--terminal);
       font-size: 46px;
@@ -1131,9 +1154,25 @@
 
   <!-- ─── HEADER ─── -->
   <header>
-    <div class="logo-wrap">
-      <div class="logo-icon">₿</div>
-      <div class="logo-text">HODL TRACKER<span class="logo-cursor"></span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;width:100%;position:relative;z-index:1;">
+      <div class="logo-wrap">
+        <div class="logo-icon">₿</div>
+        <div class="logo-text">HODL TRACKER<span class="logo-cursor"></span></div>
+      </div>
+      <!-- Page Symbol -->
+      <div id="pageSymbol" style="
+        display:flex;flex-direction:column;align-items:center;gap:4px;
+        opacity:1;transition:opacity .3s ease;flex-shrink:0;">
+        <div id="pageSymbolIcon" style="
+          font-size:36px;line-height:1;
+          filter:drop-shadow(0 0 8px rgba(247,147,26,.6));
+          transition:all .3s ease;">🏆</div>
+        <div id="pageSymbolLabel" style="
+          font-family:var(--mono);font-size:8px;font-weight:700;
+          color:var(--orange);letter-spacing:.12em;text-transform:uppercase;
+          text-shadow:0 0 8px rgba(247,147,26,.5);
+          transition:all .3s ease;">RANKING</div>
+      </div>
     </div>
     <div class="subtitle">
       <span class="live-dot"></span>LIVE PRICE &nbsp;·&nbsp; PORTFOLIO &nbsp;·&nbsp; GLOBAL RANKING
@@ -1172,6 +1211,18 @@
     </div>
     <div class="ticker-right">
       <div class="ticker-change" id="tickerChange">—</div>
+      <!-- EUR / USD Toggle direkt im Ticker -->
+      <div style="display:flex;background:var(--bg);border:1px solid var(--border2);
+                  border-radius:6px;overflow:hidden;margin-top:4px;">
+        <button id="p1BtnEUR" onclick="setP1Currency('EUR')"
+          style="padding:4px 10px;border:none;background:var(--orange);color:#000;
+                 font-family:var(--mono);font-size:10px;font-weight:700;
+                 letter-spacing:.04em;cursor:pointer;transition:all .15s;">EUR</button>
+        <button id="p1BtnUSD" onclick="setP1Currency('USD')"
+          style="padding:4px 10px;border:none;background:transparent;color:var(--muted);
+                 font-family:var(--mono);font-size:10px;font-weight:700;
+                 letter-spacing:.04em;cursor:pointer;transition:all .15s;">USD</button>
+      </div>
       <div class="ticker-updated" id="tickerUpdated">wird geladen …</div>
     </div>
   </div>
@@ -1183,71 +1234,54 @@
 
   <!-- ─── PORTFOLIO WERT + P&L ─── -->
   <div class="portfolio-value-bar" style="flex-direction:column;align-items:stretch;gap:0;">
-    <!-- Zeile 1: Stack-Wert -->
+    <!-- Zeile 1: Stack-Wert + dezenter Edit-Button -->
     <div style="display:flex;justify-content:space-between;align-items:center;">
       <div class="pv-label" data-i18n="pvLabel">Mein Stack ist aktuell</div>
-      <div class="pv-value empty" id="pvValue">—</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="pv-value empty" id="pvValue">—</div>
+        <button onclick="PnL.togglePanel()" id="pnlEditBtn"
+          title="Kaufpreis eintragen"
+          style="background:none;border:1px solid var(--border2);border-radius:6px;
+                 color:var(--muted);font-size:13px;padding:3px 7px;cursor:pointer;
+                 transition:all .15s;line-height:1;flex-shrink:0;"
+          onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)';"
+          onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)';">✎</button>
+      </div>
     </div>
+
     <!-- Zeile 2: P&L — nur sichtbar wenn Kaufpreis eingetragen -->
     <div id="pvPnlRow" style="display:none;margin-top:10px;padding-top:10px;
          border-top:1px solid var(--border);
-         display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;">
-      <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">
-        SEIT KAUF
-      </div>
+         grid-template-columns:1fr auto auto;align-items:center;gap:10px;">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">SEIT KAUF</div>
       <div style="font-family:var(--terminal);font-size:22px;line-height:1;" id="pvPnlAbs">—</div>
       <div style="font-family:var(--terminal);font-size:22px;line-height:1;
                   background:var(--bg);border-radius:6px;padding:3px 10px;" id="pvPnlPct">—</div>
     </div>
-  </div>
 
-  <!-- ─── P&L — kollabierbar ─── -->
-  <div style="width:calc(100% - 32px);max-width:488px;margin:10px 16px 0;">
-    <button onclick="PnL.togglePanel()" id="pnlToggleBtn"
-      style="width:100%;display:flex;align-items:center;justify-content:space-between;
-             background:var(--surface);border:1px solid var(--border2);
-             border-left:3px solid var(--orange-dim);
-             border-radius:var(--radius);padding:12px 16px;cursor:pointer;
-             transition:border-color .15s;"
-      onmouseover="this.style.borderLeftColor='var(--orange)';"
-      onmouseout="this.style.borderLeftColor='var(--orange-dim)';">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:9px;color:var(--orange-dim);">//</span>
-        <span style="font-family:var(--mono);font-size:11px;font-weight:700;
-                     color:var(--muted);letter-spacing:.06em;text-transform:uppercase;">
-          Kaufpreis eintragen
-        </span>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-family:var(--terminal);font-size:16px;color:var(--orange);" id="pnlBannerValue"></span>
-        <span style="font-family:var(--terminal);font-size:16px;color:var(--muted);" id="pnlArrow">›</span>
-      </div>
-    </button>
-    <div id="pnlPanel" style="overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1);">
-      <div style="background:var(--surface);border:1px solid var(--border2);border-top:none;
-                  border-radius:0 0 var(--radius) var(--radius);overflow:hidden;">
-        <div style="padding:16px 18px;">
-          <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">
-            <span style="color:var(--orange-dim);">> </span>Durchschn. Kaufpreis
-          </div>
-          <div style="display:flex;gap:8px;">
-            <input id="pnlInput" type="text" inputmode="decimal" placeholder="z.B. 45.000"
-              style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
-                     color:var(--text);font-family:var(--terminal);font-size:26px;
-                     padding:8px 12px 6px;outline:none;transition:border-color .2s;"
-              onfocus="this.style.borderColor='var(--orange)'"
-              onblur="this.style.borderColor='var(--border2)'" />
-            <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
-                        color:var(--muted);font-family:var(--terminal);font-size:16px;
-                        padding:8px 12px;white-space:nowrap;" id="pnlCurrencyLabel">EUR</div>
-          </div>
-          <div style="font-size:9px;color:var(--muted2);margin-top:8px;letter-spacing:.04em;">
-            Auswertung erscheint im Stack-Banner oben
-          </div>
+    <!-- Kaufpreis-Eingabe — aufklappbar -->
+    <div id="pnlPanel" style="overflow:hidden;max-height:0;transition:max-height .3s cubic-bezier(.4,0,.2,1);">
+      <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:10px;">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">
+          <span style="color:var(--orange-dim);">> </span>Durchschn. Kaufpreis
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input id="pnlInput" type="text" inputmode="decimal" placeholder="z.B. 45.000"
+            style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+                   color:var(--text);font-family:var(--terminal);font-size:22px;
+                   padding:7px 12px 5px;outline:none;transition:border-color .2s;"
+            onfocus="this.style.borderColor='var(--orange)'"
+            onblur="this.style.borderColor='var(--border2)'" />
+          <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+                      color:var(--muted);font-family:var(--terminal);font-size:14px;
+                      padding:7px 10px;white-space:nowrap;" id="pnlCurrencyLabel">EUR</div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- ─── P&L Kaufpreis — inline Edit-Button in Stack-Banner ─── -->
+  <!-- Banner sitzt direkt in der pvValue-Card, kein separater Banner -->
 
   <!-- ─── INPUT ─── -->
   <div class="card">
@@ -1279,16 +1313,30 @@
 
     <div id="rankContent" style="display:none;">
 
-      <!-- Hero number + tier badge -->
+      <!-- Hero number + tier badge + system toggle -->
       <div class="rank-hero">
         <div>
           <div class="rank-hero-label">Geschätztes globales Inhaber-Ranking</div>
           <div class="rank-hero-number" id="rankHeroNumber">—</div>
           <div class="rank-hero-sub" id="rankHeroSub">der Inhaber</div>
         </div>
-        <div class="tier-badge">
-          <span class="tier-emoji" id="tierEmoji">—</span>
-          <span class="tier-name"  id="tierName">—</span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <div class="tier-badge">
+            <span class="tier-emoji" id="tierEmoji">—</span>
+            <span class="tier-name"  id="tierName">—</span>
+          </div>
+          <!-- System Toggle -->
+          <div style="display:flex;background:var(--bg);border:1px solid var(--border2);
+                      border-radius:6px;overflow:hidden;">
+            <button id="tierBtnClassic" onclick="Rankings.setSystem('classic')"
+              style="padding:3px 9px;border:none;background:var(--orange);color:#000;
+                     font-family:var(--mono);font-size:9px;font-weight:700;
+                     letter-spacing:.04em;cursor:pointer;transition:all .15s;">KLASSISCH</button>
+            <button id="tierBtnModern" onclick="Rankings.setSystem('modern')"
+              style="padding:3px 9px;border:none;background:transparent;color:var(--muted);
+                     font-family:var(--mono);font-size:9px;font-weight:700;
+                     letter-spacing:.04em;cursor:pointer;transition:all .15s;">MODERN</button>
+          </div>
         </div>
       </div>
 
@@ -1311,8 +1359,8 @@
       <!-- Tier bar -->
       <div class="rank-bar-section">
         <div class="rank-bar-labels">
-          <span>🦠 Plankton</span>
-          <span>🐋 Blauwal</span>
+          <span id="tierLabelMin">🦠 Plankton</span>
+          <span id="tierLabelMax">🐋 Blauwal</span>
         </div>
         <div class="rank-bar-track">
           <div class="rank-bar-fill" id="rankBarFill" style="width:0%"></div>
@@ -1370,7 +1418,7 @@
 
   <!-- ─── MAX HOLDER CARD ─── -->
   <div class="card" id="maxHoldersCard" style="display:none;">
-    <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">
+    <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;text-shadow:0 0 8px rgba(61,214,88,.3);">
       <span style="color:var(--green-dim);">// </span>Maximale Anzahl gleichgroßer Bestände
     </div>
     <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
@@ -1387,29 +1435,6 @@
                 display:flex;justify-content:space-between;font-size:9px;color:var(--muted2);">
       <span>Umlauf: <span id="maxHoldersSupply" style="color:var(--muted);">—</span> BTC</span>
       <span>÷ <span id="maxHoldersDivisor" style="color:var(--orange);">—</span> BTC = Ergebnis</span>
-    </div>
-  </div>
-
-  <!-- ─── HALVING COUNTDOWN ─── -->
-  <div class="card">
-    <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">
-      <span style="color:var(--orange-dim);">// </span>Nächstes Bitcoin Halving
-    </div>
-    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
-      <div>
-        <div style="font-family:var(--terminal);font-size:46px;line-height:1;color:var(--orange);
-                    text-shadow:0 0 18px rgba(247,147,26,.5);" id="halvingDays">—</div>
-        <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:4px;">TAGE</div>
-      </div>
-      <div style="flex:1;min-width:120px;">
-        <div style="font-size:11px;color:var(--text);line-height:1.6;" id="halvingBlocks">—</div>
-        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="halvingTarget">Ziel: Block 1.050.000</div>
-      </div>
-    </div>
-    <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);
-                display:flex;justify-content:space-between;font-size:9px;color:var(--muted2);">
-      <span>Aktueller Block: <span id="halvingCurrentBlock" style="color:var(--muted);">—</span></span>
-      <span>ca. April 2028</span>
     </div>
   </div>
 
@@ -1762,71 +1787,128 @@
   ══════════════════════════════════════════ -->
   <div class="page" id="page4">
 
-    <div class="dash-card">
-      <div class="dash-label" data-i18n="hashLabel">Netzwerk Hashrate</div>
-      <div class="dash-value" id="dashHashrate">
-        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+    <div class="dash-card" style="position:relative;overflow:hidden;">
+      <div class="dash-anim-wrap" style="position:absolute;right:12px;top:12px;bottom:12px;width:min(130px,35%);border-radius:6px;overflow:hidden;">
+        <canvas id="minerCanvas" style="width:100%;height:100%;display:block;pointer-events:none;"></canvas>
       </div>
-      <div class="dash-unit" data-i18n="hashUnit">EH/s (Exahashes pro Sekunde)</div>
-      <div class="dash-updated" id="dashHashrateUpdated"></div>
-    </div>
-
-    <div class="dash-card">
-      <div class="dash-label" data-i18n="blockLabel">Aktuelle Block-Höhe</div>
-      <div class="dash-value" id="dashBlockHeight">
-        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
-      </div>
-      <div class="dash-unit" data-i18n="blockUnit">bestätigte Blöcke in der Chain</div>
-    </div>
-
-    <div class="dash-card">
-      <div class="dash-label" data-i18n="diffLabel">Nächste Difficulty-Anpassung</div>
-      <div class="dash-value" id="dashDifficulty">
-        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
-      </div>
-      <div class="dash-unit" id="dashDiffSub" data-i18n="diffUnit">geschätzte Änderung</div>
-    </div>
-
-    <div class="dash-card">
-      <div class="dash-label" data-i18n="mempoolLabel">Unbestätigte Transaktionen</div>
-      <div class="dash-value" id="dashMempool">
-        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
-      </div>
-      <div class="dash-unit" data-i18n="mempoolUnit">Transaktionen im Mempool</div>
-      <div class="dash-updated" id="dashMempoolSub"></div>
-    </div>
-
-    <div class="dash-card">
-      <div class="dash-label" data-i18n="nodesLabel">Aktive Full Nodes</div>
-      <div class="dash-value" id="dashNodes">
-        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
-      </div>
-      <div class="dash-unit" data-i18n="nodesUnit">erreichbare Bitcoin-Nodes weltweit</div>
-      <div class="dash-breakdown" id="dashBreakdown" style="display:none;">
-        <div class="dash-break-row">
-          <div class="dash-break-label" data-i18n="nodeCoreLabel">Bitcoin Core</div>
-          <div class="dash-break-val green" id="dashCore">—</div>
+      <div style="position:relative;z-index:1;">
+        <div class="dash-label" data-i18n="hashLabel">Netzwerk Hashrate</div>
+        <div class="dash-value" id="dashHashrate">
+          <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
         </div>
-        <div class="dash-break-row">
-          <div class="dash-break-label" data-i18n="nodeKnotsLabel">Bitcoin Knots</div>
-          <div class="dash-break-val orange" id="dashKnots">—</div>
+        <div class="dash-unit" data-i18n="hashUnit">EH/s (Exahashes pro Sekunde)</div>
+        <div class="dash-updated" id="dashHashrateUpdated"></div>
+      </div>
+    </div>
+
+    <div class="dash-card" style="overflow:hidden;position:relative;">
+      <!-- Blockchain Canvas — rechts im Card -->
+      <div class="dash-anim-wrap" style="position:absolute;right:12px;top:12px;bottom:12px;width:min(170px,42%);border-radius:6px;overflow:hidden;">
+        <canvas id="blockchainCanvas" style="width:100%;height:100%;display:block;pointer-events:none;opacity:.55;"></canvas>
+      </div>
+
+      <div style="position:relative;z-index:1;">
+        <div class="dash-label" data-i18n="blockLabel">Aktuelle Block-Höhe</div>
+        <div class="dash-value" id="dashBlockHeight">
+          <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
         </div>
-        <div class="dash-break-row">
-          <div class="dash-break-label" data-i18n="nodeOtherLabel">Sonstige</div>
-          <div class="dash-break-val" id="dashOther">—</div>
+        <div class="dash-unit" data-i18n="blockUnit">bestätigte Blöcke in der Chain</div>
+      </div>
+    </div>
+
+    <div class="dash-card" style="position:relative;overflow:hidden;">
+      <div class="dash-anim-wrap" style="position:absolute;right:12px;top:12px;bottom:12px;width:min(140px,38%);border-radius:6px;overflow:hidden;">
+        <canvas id="difficultyCanvas" style="width:100%;height:100%;display:block;pointer-events:none;opacity:.65;"></canvas>
+      </div>
+      <div style="position:relative;z-index:1;">
+        <div class="dash-label" data-i18n="diffLabel">Nächste Difficulty-Anpassung</div>
+        <div class="dash-value" id="dashDifficulty">
+          <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+        </div>
+        <div class="dash-unit" id="dashDiffSub" data-i18n="diffUnit">geschätzte Änderung</div>
+      </div>
+    </div>
+
+    <div class="dash-card" style="position:relative;overflow:hidden;">
+      <div class="dash-anim-wrap" style="position:absolute;right:12px;top:12px;bottom:12px;width:min(150px,40%);border-radius:6px;overflow:hidden;">
+        <canvas id="mempoolCanvas" style="width:100%;height:100%;display:block;pointer-events:none;"></canvas>
+      </div>
+      <div style="position:relative;z-index:1;">
+        <div class="dash-label" data-i18n="mempoolLabel">Unbestätigte Transaktionen</div>
+        <div class="dash-value" id="dashMempool">
+          <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+        </div>
+        <div class="dash-unit" data-i18n="mempoolUnit">Transaktionen im Mempool</div>
+        <div class="dash-updated" id="dashMempoolSub"></div>
+      </div>
+    </div>
+
+    <div class="dash-card" style="position:relative;overflow:hidden;">
+      <div class="dash-anim-wrap" style="position:absolute;right:12px;top:12px;bottom:12px;width:min(130px,35%);border-radius:6px;overflow:hidden;">
+        <canvas id="globeCanvas" style="width:100%;height:100%;display:block;pointer-events:none;"></canvas>
+      </div>
+      <div style="position:relative;z-index:1;">
+        <div class="dash-label" data-i18n="nodesLabel">Aktive Full Nodes</div>
+        <div class="dash-value" id="dashNodes">
+          <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+        </div>
+        <div class="dash-unit" data-i18n="nodesUnit">erreichbare Bitcoin-Nodes weltweit</div>
+        <div class="dash-breakdown" id="dashBreakdown" style="display:none;">
+          <div class="dash-break-row">
+            <div class="dash-break-label" data-i18n="nodeCoreLabel">Bitcoin Core</div>
+            <div class="dash-break-val green" id="dashCore">—</div>
+          </div>
+          <div class="dash-break-row">
+            <div class="dash-break-label" data-i18n="nodeKnotsLabel">Bitcoin Knots</div>
+            <div class="dash-break-val orange" id="dashKnots">—</div>
+          </div>
+          <div class="dash-break-row">
+            <div class="dash-break-label" data-i18n="nodeOtherLabel">Sonstige</div>
+            <div class="dash-break-val" id="dashOther">—</div>
+          </div>
+        </div>
+        <div class="dash-updated" id="dashNodesUpdated"></div>
+      </div>
+    </div>
+
+    <div class="dash-card" style="position:relative;overflow:hidden;">
+      <div class="dash-anim-wrap" style="position:absolute;right:12px;top:12px;bottom:12px;width:min(120px,32%);border-radius:6px;overflow:hidden;">
+        <canvas id="halvingCanvas" style="width:100%;height:100%;display:block;pointer-events:none;opacity:.75;"></canvas>
+      </div>
+      <div style="position:relative;z-index:1;">
+        <div class="dash-label">Nächstes Bitcoin Halving</div>
+        <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;">
+          <div>
+            <div style="font-family:var(--terminal);font-size:46px;line-height:1;color:var(--orange);
+                        text-shadow:0 0 18px rgba(247,147,26,.5);" id="halvingDays">—</div>
+            <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:4px;">TAGE</div>
+          </div>
+          <div style="flex:1;min-width:100px;">
+            <div style="font-family:var(--mono);font-size:11px;color:var(--text);line-height:1.6;" id="halvingBlocks">—</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:3px;">Ziel: Block 1.050.000</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);
+                    display:flex;justify-content:space-between;font-size:9px;color:var(--muted2);">
+          <span>Aktueller Block: <span id="halvingCurrentBlock" style="color:var(--muted);">—</span></span>
+          <span>ca. April 2028</span>
         </div>
       </div>
-      <div class="dash-updated" id="dashNodesUpdated"></div>
     </div>
 
     <!-- BTC Dominanz -->
-    <div class="dash-card">
-      <div class="dash-label" data-i18n="domLabel">BTC Marktdominanz</div>
-      <div class="dash-value" id="dashDominance">
-        <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+    <div class="dash-card" style="position:relative;overflow:hidden;">
+      <div class="dash-anim-wrap" style="position:absolute;right:12px;top:12px;bottom:12px;width:min(140px,38%);border-radius:6px;overflow:hidden;">
+        <canvas id="pacmanCanvas" style="width:100%;height:100%;display:block;pointer-events:none;"></canvas>
       </div>
-      <div class="dash-unit" data-i18n="domUnit">Anteil am gesamten Krypto-Markt</div>
-      <div class="dash-updated" id="dashDomUpdated"></div>
+      <div style="position:relative;z-index:1;">
+        <div class="dash-label" data-i18n="domLabel">BTC Marktdominanz</div>
+        <div class="dash-value" id="dashDominance">
+          <span class="dash-loading"><span class="loading-spinner"></span><span data-i18n="dashLoading">wird geladen …</span></span>
+        </div>
+        <div class="dash-unit" data-i18n="domUnit">Anteil am gesamten Krypto-Markt</div>
+        <div class="dash-updated" id="dashDomUpdated"></div>
+      </div>
     </div>
 
     <!-- Handelbare BTC auf Börsen -->
@@ -1885,8 +1967,8 @@
           LADEN
         </button>
       </div>
-      <div style="font-size:9px;color:var(--muted2);margin-top:10px;letter-spacing:.04em;">
-        Daten via mempool.space · Adressen werden nur abgefragt, nicht gespeichert
+      <div style="font-size:9px;color:var(--muted2);margin-top:10px;letter-spacing:.04em;line-height:1.6;">
+        🔒 Lokal gespeichert · kein Server · kein Tracking<br>Abruf via mempool.space (nur lesend)
       </div>
     </div>
 
@@ -1899,7 +1981,7 @@
 
     <!-- Zusammenfassung -->
     <div id="hodlSummary" style="display:none;" class="card">
-      <div style="font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--green);letter-spacing:.14em;text-transform:uppercase;text-shadow:0 0 8px rgba(61,214,88,.3);margin-bottom:14px;">
         <span style="color:var(--green-dim);">// </span>Zusammenfassung
       </div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
@@ -2003,6 +2085,26 @@
         { minBtc: 1000,   emoji: '🦈', name: 'Hai',      color: '#ff6b6b' },
         { minBtc: 10000,  emoji: '🐋', name: 'Blauwal',  color: '#ff4444' },
       ],
+
+      // Modernes System — fokus auf kleine Bestände
+      tiersModern: [
+        { minBtc: 0,      emoji: '🦠', name: 'Mikrobe',    color: '#4e6b46' },
+        { minBtc: 0.001,  emoji: '🐚', name: 'Muschel',    color: '#a8c4a0' },
+        { minBtc: 0.01,   emoji: '🦐', name: 'Garnele',    color: '#7dd4f7' },
+        { minBtc: 0.1,    emoji: '🦀', name: 'Krabbe',     color: '#f7d07a' },
+        { minBtc: 0.2,    emoji: '🐡', name: 'Kugelfisch', color: '#ffb347' },
+        { minBtc: 0.3,    emoji: '🦑', name: 'Tintenfisch',color: '#c87ef7' },
+        { minBtc: 0.4,    emoji: '🐙', name: 'Oktopus',    color: '#b87ef7' },
+        { minBtc: 0.5,    emoji: '🐠', name: 'Tropenfisch',color: '#ff9f7e' },
+        { minBtc: 0.6,    emoji: '🦭', name: 'Robbe',      color: '#a0c4ff' },
+        { minBtc: 0.7,    emoji: '🐢', name: 'Schildkröte',color: '#7edf9a' },
+        { minBtc: 0.8,    emoji: '🐬', name: 'Delfin',     color: '#7dd4f7' },
+        { minBtc: 0.9,    emoji: '🐊', name: 'Krokodil',   color: '#5a9e6f' },
+        { minBtc: 1,      emoji: '🦈', name: 'Hai',        color: '#ff6b6b' },
+        { minBtc: 2,      emoji: '🐋', name: 'Buckelwal',  color: '#f7931a' },
+        { minBtc: 5,      emoji: '🦄', name: 'Narwal',     color: '#c87ef7' },
+        { minBtc: 10,     emoji: '🐳', name: 'Blauwal',    color: '#ff4444' },
+      ],
     };
 
     const state = {
@@ -2020,6 +2122,32 @@
 
     /* ── Rankings ── */
     const Rankings = {
+      _system: 'classic',   // 'classic' | 'modern'
+
+      setSystem(sys) {
+        this._system = sys;
+        localStorage.setItem('hodl_tiersystem', sys);
+        // Toggle-Buttons updaten
+        const btnC = document.getElementById('tierBtnClassic');
+        const btnM = document.getElementById('tierBtnModern');
+        if (btnC && btnM) {
+          const on  = 'background:var(--orange);color:#000;';
+          const off = 'background:transparent;color:var(--muted);';
+          btnC.style.cssText += sys === 'classic' ? on : off;
+          btnM.style.cssText += sys === 'modern'  ? on : off;
+        }
+        // Balken-Endpunkt-Labels aktualisieren
+        const activeTiers = sys === 'modern' ? CONFIG.tiersModern : CONFIG.tiers;
+        const minTier = activeTiers[0];
+        const maxTier = activeTiers[activeTiers.length - 1];
+        const minEl = document.getElementById('tierLabelMin');
+        const maxEl = document.getElementById('tierLabelMax');
+        if (minEl) minEl.textContent = minTier.emoji + ' ' + minTier.name;
+        if (maxEl) maxEl.textContent = maxTier.emoji + ' ' + maxTier.name;
+
+        UI.renderRanking();
+      },
+
       _interp(dist, btc) {
         if (!btc || btc <= 0) return null;
         if (btc >= dist[dist.length-1].btc) return dist[dist.length-1].cumPct;
@@ -2036,7 +2164,7 @@
       getHolderPct(btc) { return this._interp(CONFIG.holderDistribution, btc); },
       getAddrPct(btc)   { return this._interp(CONFIG.addrDistribution,   btc); },
       getTier(btc) {
-        const t = CONFIG.tiers;
+        const t = this._system === 'modern' ? CONFIG.tiersModern : CONFIG.tiers;
         for (let i = t.length-1; i >= 0; i--) if (btc >= t[i].minBtc) return t[i];
         return t[0];
       },
@@ -2379,7 +2507,6 @@
         const holderPct = Rankings.getHolderPct(btcHolding);
         const addrPct   = Rankings.getAddrPct(btcHolding);
         const tier      = Rankings.getTier(btcHolding);
-        const barPos    = Rankings.barPos(btcHolding);
         const supply    = circulatingSupply ?? 19_870_000;
         const supShare  = Rankings.getSupplyShare(btcHolding, supply);
 
@@ -2408,22 +2535,69 @@
           }
         }
 
+        // barPos wird unten mit der System-Skala berechnet — erst Ticks rendern
+        const ticksEl = document.getElementById('rankTicks');
+        const activeSystem = Rankings._system;
+        // Skala je nach System: Modern max 10 BTC, Klassisch max 10.000 BTC
+        // barPos — beim modernen System Index-basiert (linear), beim klassischen logarithmisch
+        let barPos = 0;
+        if (btcHolding > 0) {
+          if (activeSystem === 'modern') {
+            const activeTiers = CONFIG.tiersModern;
+            let tierIdx = 0;
+            for (let i = activeTiers.length - 1; i >= 0; i--) {
+              if (btcHolding >= activeTiers[i].minBtc) { tierIdx = i; break; }
+            }
+            // Innerhalb des Tier-Segments interpolieren
+            const tierMin = activeTiers[tierIdx].minBtc;
+            const tierMax = tierIdx < activeTiers.length - 1
+              ? activeTiers[tierIdx + 1].minBtc
+              : tierMin * 10;
+            const t = tierMin > 0
+              ? Math.min(1, (btcHolding - tierMin) / (tierMax - tierMin))
+              : 0;
+            const segW = 1 / (activeTiers.length - 1);
+            barPos = ((tierIdx + t) / (activeTiers.length - 1)) * 100;
+          } else {
+            const mn = Math.log10(0.00005);
+            const mx = Math.log10(100_000);
+            barPos = Math.min(100, Math.max(0,
+              ((Math.log10(Math.max(btcHolding, 0.00005)) - mn) / (mx - mn)) * 100));
+          }
+        }
+
         document.getElementById('rankBarFill').style.width = barPos + '%';
         document.getElementById('rankBarDot').style.left   = barPos + '%';
 
-        const ticksEl = document.getElementById('rankTicks');
-        if (!ticksEl.dataset.drawn) {
-          ticksEl.dataset.drawn = '1';
-          const mn = Math.log10(1e-6), mx = Math.log10(100_000);
-          CONFIG.tiers.forEach(t => {
-            if (!t.minBtc) return;
-            const pos = ((Math.log10(t.minBtc)-mn)/(mx-mn))*100;
+        if (ticksEl.dataset.system !== activeSystem) {
+          ticksEl.dataset.system = activeSystem;
+          ticksEl.innerHTML = '';
+          const activeTiers = activeSystem === 'modern' ? CONFIG.tiersModern : CONFIG.tiers;
+          const tiersWithPos = activeTiers.filter(t => t.minBtc > 0);
+
+          tiersWithPos.forEach((t, i) => {
+            let pos;
+            if (activeSystem === 'modern') {
+              // Gleichmäßig verteilt: Index 0 → 0%, letzter Index → 100%
+              pos = (i / (tiersWithPos.length - 1)) * 100;
+            } else {
+              // Logarithmisch für Klassisch (0.001 bis 10.000 BTC)
+              const mn = Math.log10(0.00005);
+              const mx = Math.log10(100_000);
+              pos = ((Math.log10(t.minBtc) - mn) / (mx - mn)) * 100;
+            }
+            if (pos < 0 || pos > 101) return;
+
             const tick = document.createElement('div');
-            tick.className = 'rank-tick'; tick.style.left = pos+'%';
+            tick.className = 'rank-tick';
+            tick.style.left = pos + '%';
             ticksEl.appendChild(tick);
+
             const lbl = document.createElement('div');
-            lbl.className = 'rank-tick-emoji'; lbl.style.left = pos+'%';
-            lbl.textContent = t.emoji; ticksEl.appendChild(lbl);
+            lbl.className = 'rank-tick-emoji';
+            lbl.style.left = pos + '%';
+            lbl.textContent = t.emoji;
+            ticksEl.appendChild(lbl);
           });
         }
 
@@ -2889,9 +3063,31 @@
           PnL.render();
         });
 
+        // Tier-System aus localStorage wiederherstellen
+        const savedSystem = localStorage.getItem('hodl_tiersystem');
+        if (savedSystem === 'modern') Rankings.setSystem('modern');
+
+        // Sparrate aus localStorage wiederherstellen
+        const savedSavings = localStorage.getItem('hodl_savingsrate');
+        const savedSavingsCur = localStorage.getItem('hodl_savingscur');
+        if (savedSavings) {
+          const el = document.getElementById('savingsInput');
+          if (el) el.value = savedSavings;
+        }
+        if (savedSavingsCur) {
+          const el = document.getElementById('savingsCurrency');
+          if (el) el.value = savedSavingsCur;
+        }
+
         // Sparrechner Events
-        document.getElementById('savingsInput')?.addEventListener('input', () => SavingsCalc.render());
-        document.getElementById('savingsCurrency')?.addEventListener('change', () => SavingsCalc.render());
+        document.getElementById('savingsInput')?.addEventListener('input', () => {
+          localStorage.setItem('hodl_savingsrate', document.getElementById('savingsInput').value);
+          SavingsCalc.render();
+        });
+        document.getElementById('savingsCurrency')?.addEventListener('change', () => {
+          localStorage.setItem('hodl_savingscur', document.getElementById('savingsCurrency').value);
+          SavingsCalc.render();
+        });
 
         Portfolio.init();
         PnL.init();
@@ -2920,7 +3116,15 @@
           const altcoinIds = Portfolio.data.entries.filter(e => e.type === 'altcoin').map(e => e.coinId);
           const stockTickers = [...new Set(Portfolio.data.entries.filter(e => e.type === 'stock').map(e => e.ticker))];
           if (altcoinIds.length) API.fetchAltcoinPrices(altcoinIds).then(() => Portfolio.render());
-          if (stockTickers.length) API.fetchAllStockPrices(stockTickers).then(() => Portfolio.render()); // Chart live mit neuem Preis updaten
+          if (stockTickers.length) API.fetchAllStockPrices(stockTickers).then(() => Portfolio.render());
+          // Netzwerk-Daten alle 30s wenn Seite 4 aktiv
+          if (document.getElementById('page4').classList.contains('active')) {
+            Dashboard.fetchHashrate();
+            Dashboard.fetchMempoolStats();
+            Dashboard.fetchDominance();
+            Dashboard.fetchExchangeReserves();
+            UI.updateHalving();
+          }
         } catch(err) { UI.showError(`PREISABRUF FEHLER: ${err.message}`); }
       },
     };
@@ -2928,6 +3132,35 @@
     /* ─────────────────────────────────────────────
        MODUL: Navigation — 4 Seiten
     ───────────────────────────────────────────── */
+    /* ── Gemeinsamer RAF-Loop für alle Canvas-Animationen ── */
+    const AnimLoop = {
+      _raf:   null,
+      _anims: [],
+
+      register(anim) { if (!this._anims.includes(anim)) this._anims.push(anim); },
+
+      start() {
+        if (this._raf) return;
+        const tick = () => {
+          this._raf = requestAnimationFrame(tick);
+          this._anims.forEach(a => { if (a._active) { a._syncSize?.(); a.frame++; a.update?.(); a.draw?.(); } });
+        };
+        this._raf = requestAnimationFrame(tick);
+      },
+
+      stop() {
+        if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+      },
+    };
+
+    const PAGE_SYMBOLS = {
+      1: { icon: '🏆', label: 'RANKING',   color: '#f7931a', glow: 'rgba(247,147,26,.6)' },
+      2: { icon: '📊', label: 'PROZENTE',  color: '#3dd658', glow: 'rgba(61,214,88,.6)'  },
+      3: { icon: '💼', label: 'PORTFOLIO', color: '#7dd4f7', glow: 'rgba(125,212,247,.6)'},
+      4: { icon: '🌐', label: 'NETZWERK',  color: '#f7931a', glow: 'rgba(247,147,26,.6)' },
+      5: { icon: '⏱',  label: 'HODL',      color: '#3dd658', glow: 'rgba(61,214,88,.6)'  },
+    };
+
     function setPage(n) {
       [1,2,3,4,5].forEach(i => {
         document.getElementById(`page${i}`).classList.toggle('active', i === n);
@@ -2935,15 +3168,41 @@
       });
       if (n === 2) { UI.renderTable(); SavingsCalc.render(); }
       if (n === 3) Portfolio.render();
-      if (n === 4) Dashboard.init();
+      if (n === 4) {
+        Dashboard.loaded = false;
+        Dashboard.init();
+        BlockchainAnim.start(); MempoolAnim.start(); MinerAnim.start();
+        HalvingAnim.start(); DifficultyAnim.start(); PacmanAnim.start(); GlobeAnim.start();
+        UI.updateHalving();
+      }
+      if (n !== 4) {
+        BlockchainAnim.stop(); MempoolAnim.stop(); MinerAnim.stop();
+        HalvingAnim.stop(); DifficultyAnim.stop(); PacmanAnim.stop(); GlobeAnim.stop();
+      }
       if (n === 5 && !HodlTimer._restored) {
         HodlTimer._restored = true;
         HodlTimer.restoreAddresses();
-        // Automatisch laden wenn gespeicherte Adressen vorhanden
         const saved = localStorage.getItem('hodl_addresses');
         if (saved && JSON.parse(saved).length) {
           setTimeout(() => HodlTimer.load(), 300);
         }
+      }
+
+      // Page Symbol wechseln — sanfter Fade
+      const sym   = PAGE_SYMBOLS[n];
+      const el    = document.getElementById('pageSymbol');
+      const icon  = document.getElementById('pageSymbolIcon');
+      const label = document.getElementById('pageSymbolLabel');
+      if (sym && el) {
+        el.style.opacity = '0';
+        setTimeout(() => {
+          icon.textContent       = sym.icon;
+          icon.style.filter      = `drop-shadow(0 0 10px ${sym.glow})`;
+          label.textContent      = sym.label;
+          label.style.color      = sym.color;
+          label.style.textShadow = `0 0 8px ${sym.glow}`;
+          el.style.opacity       = '1';
+        }, 150);
       }
     }
 
@@ -3297,6 +3556,8 @@
 
         // Währungs-Select nur für Custom-Einträge
         const showCurrency = !isOunces && !isAltcoin && !isStock;
+        const activeCur = state.currency === 'USD' ? 'USD' : 'EUR';
+        const currentCur = state.currency === 'USD' ? 'USD' : 'EUR';
 
         row.innerHTML = `
           <div style="display:flex;flex-direction:column;gap:7px;padding:10px 16px;
@@ -3316,8 +3577,8 @@
                 style="background:var(--surface3);border:1px solid var(--green-dim);border-radius:7px;
                        color:var(--green);font-family:var(--terminal);font-size:14px;
                        padding:6px 8px;outline:none;cursor:pointer;">
-                <option value="EUR" ${entry.currency==='EUR'?'selected':''}>EUR</option>
-                <option value="USD" ${entry.currency==='USD'?'selected':''}>USD</option>
+                <option value="EUR" ${(entry.currency||currentCur)==='EUR'?'selected':''}>EUR</option>
+                <option value="USD" ${(entry.currency||currentCur)==='USD'?'selected':''}>USD</option>
               </select>` : `<span style="font-size:11px;color:var(--muted);padding:0 6px;">${isOunces ? 'OZ' : isAltcoin ? (entry.symbol||'') : entry.ticker||''}</span>`}
             </div>
             <div style="display:flex;gap:7px;">
@@ -3891,8 +4152,1412 @@
 
         body.innerHTML =
           row('1 MONAT', Fmt.fiat(amount, cur) + ' einmalig', btcMonth, pctMonth, amount) +
-          row('1 JAHR',  Fmt.fiat(amount * 12, cur) + ' gesamt', btcYear, pctYear, amount * 12);
+          row('1 JAHR',  Fmt.fiat(amount * 12, cur) + ' gesamt', btcYear, pctYear, amount * 12) +
+          `<div style="padding:8px 14px;font-size:9px;color:var(--muted2);letter-spacing:.06em;
+                       border-top:1px solid var(--border);">
+            Basis: 1 BTC = ${Fmt.fiat(price, cur)}
+           </div>`;
       },
+    };
+
+
+    /* ═══════════════════════════════════════════════════
+       MODUL: Miner Canvas Animation
+       ASIC Miner — pulsierend, Hitzewellen, LEDs blinken
+    ═══════════════════════════════════════════════════ */
+    const MinerAnim = {
+      raf:    null,
+      frame:  0,
+      heat:   [],   // Hitzepartikel
+
+      start() {
+        this.canvas = document.getElementById('minerCanvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        const c = this.canvas;
+        // Use parent wrapper dimensions for correct sizing
+        const pw = c.parentElement || c;
+        c.width  = (pw.offsetWidth  || 130) * devicePixelRatio;
+        c.height = (pw.offsetHeight || 100) * devicePixelRatio;
+        c.style.width  = '100%';
+        c.style.height = '100%';
+        this.ctx.scale(devicePixelRatio, devicePixelRatio);
+        this.heat = [];
+        this.frame = 0;
+        this._active = true;
+        AnimLoop.register(this);
+      },
+
+      _syncSize() {
+        const pw = this.canvas.parentElement;
+        if (!pw) return;
+        const w = pw.offsetWidth, h = pw.offsetHeight;
+        if (w < 1 || h < 1) return;
+        if (this.canvas.width !== w * devicePixelRatio) {
+          this.canvas.width  = w * devicePixelRatio;
+          this.canvas.height = h * devicePixelRatio;
+          this.ctx = this.canvas.getContext('2d');
+          this.ctx.scale(devicePixelRatio, devicePixelRatio);
+        }
+      },
+
+      // loop() removed — driven by AnimLoop shared RAF
+
+      update() {
+        // Hitzepartikel spawnen (von oben aus dem Miner)
+        if (this.frame % 3 === 0) {
+          const dpr = devicePixelRatio;
+        const W = this.canvas.width / dpr;
+        const H = this.canvas.height / dpr;
+          const cx = W * .55, cy = H * .42;
+          this.heat.push({
+            x:     cx + (Math.random() - .5) * 28,
+            y:     cy - 14,
+            vx:    (Math.random() - .5) * .4,
+            vy:    -(0.5 + Math.random() * .8),
+            life:  1,
+            decay: .012 + Math.random() * .008,
+            r:     2 + Math.random() * 2,
+          });
+        }
+        this.heat.forEach(p => {
+          p.x    += p.vx;
+          p.y    += p.vy;
+          p.life -= p.decay;
+          p.vx   *= .98;
+        });
+        this.heat = this.heat.filter(p => p.life > 0);
+      },
+
+      draw() {
+        const ctx = this.ctx;
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        ctx.clearRect(0, 0, W, H);
+
+        // Fade links
+        const fade = ctx.createLinearGradient(0, 0, 35, 0);
+        fade.addColorStop(0, 'rgba(6,10,5,1)');
+        fade.addColorStop(1, 'rgba(6,10,5,0)');
+
+        const f    = this.frame;
+        const cx   = W * .55;
+        const cy   = H * .5;
+        const pulse = .5 + .5 * Math.sin(f * .08);  // langsam pulsieren
+
+        // ── Äußerer Glow-Ring — pulsiert ──
+        const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, 45 + pulse * 12);
+        glow.addColorStop(0, `rgba(247,147,26,${0.08 + pulse * 0.07})`);
+        glow.addColorStop(1, 'rgba(247,147,26,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+
+        // ── ASIC Miner Gehäuse ──
+        const bw = 54, bh = 38;
+        const bx = cx - bw / 2, by = cy - bh / 2;
+
+        // Gehäuse-Schatten
+        ctx.shadowColor = `rgba(247,147,26,${0.3 + pulse * 0.3})`;
+        ctx.shadowBlur  = 12 + pulse * 8;
+
+        // Gehäuse
+        ctx.fillStyle   = '#0d1a08';
+        ctx.strokeStyle = `rgba(247,147,26,${0.5 + pulse * 0.4})`;
+        ctx.lineWidth   = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, bw, bh, 4);
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // ── Lüfter-Gitter (3×2 Schlitze) ──
+        ctx.strokeStyle = 'rgba(247,147,26,0.25)';
+        ctx.lineWidth   = 1;
+        for (let i = 0; i < 3; i++) {
+          const sx = bx + 6 + i * 8;
+          ctx.beginPath();
+          ctx.moveTo(sx, by + 6);
+          ctx.lineTo(sx, by + bh - 6);
+          ctx.stroke();
+        }
+
+        // ── Chip in der Mitte ──
+        const chipSize = 14;
+        const chipX = cx - chipSize / 2 + 10;
+        const chipY = cy - chipSize / 2;
+        ctx.fillStyle   = `rgba(247,147,26,${0.15 + pulse * 0.1})`;
+        ctx.strokeStyle = `rgba(247,147,26,${0.6 + pulse * 0.3})`;
+        ctx.lineWidth   = 1;
+        ctx.beginPath();
+        ctx.roundRect(chipX, chipY, chipSize, chipSize, 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Chip-Kreuz
+        ctx.strokeStyle = `rgba(247,147,26,${0.3 + pulse * 0.2})`;
+        ctx.beginPath();
+        ctx.moveTo(chipX + chipSize / 2, chipY + 2);
+        ctx.lineTo(chipX + chipSize / 2, chipY + chipSize - 2);
+        ctx.moveTo(chipX + 2, chipY + chipSize / 2);
+        ctx.lineTo(chipX + chipSize - 2, chipY + chipSize / 2);
+        ctx.stroke();
+
+        // ── LEDs — 3 Stück rechts ──
+        const ledX   = bx + bw - 9;
+        const ledColors = [
+          { y: by + 8,  phase: 0 },
+          { y: by + 18, phase: 1.2 },
+          { y: by + 28, phase: 2.4 },
+        ];
+        ledColors.forEach(led => {
+          const brightness = .4 + .6 * Math.abs(Math.sin(f * .1 + led.phase));
+          ctx.beginPath();
+          ctx.arc(ledX, led.y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle   = `rgba(61,214,88,${brightness})`;
+          ctx.shadowColor = '#3dd658';
+          ctx.shadowBlur  = 6 * brightness;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        // ── Hitzepartikel ──
+        this.heat.forEach(p => {
+          const alpha = p.life * .7;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(247,${Math.floor(80 + p.life * 70)},26,${alpha})`;
+          ctx.fill();
+        });
+
+        // ── Processing-Welle — konzentrische Ringe pulsieren nach außen ──
+        for (let i = 0; i < 2; i++) {
+          const phase = ((f * .03 + i * .5) % 1);
+          const r     = 28 + phase * 22;
+          const a     = (1 - phase) * 0.18;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(247,147,26,${a})`;
+          ctx.lineWidth   = 1;
+          ctx.stroke();
+        }
+
+        // Fade-Overlay links
+        ctx.fillStyle = fade;
+        ctx.fillRect(0, 0, 40, H);
+      },
+
+      stop() { this._active = false; },
+    };
+    /* ═══════════════════════════════════════════════════
+       MODUL: Mempool Canvas Animation
+       Datenpakete fließen in Warteschlange — Block bestätigt
+    ═══════════════════════════════════════════════════ */
+    const MempoolAnim = {
+      canvas: null, ctx: null, raf: null, frame: 0,
+      packets:  [],   // fließende Pakete
+      queue:    [],   // wartende Pakete in der Queue
+      phase:    'flow',
+      phaseT:   0,
+      nextPkt:  0,
+      flashT:   0,
+      QUEUE_MAX: 8,
+
+      start() {
+        this.canvas = document.getElementById('mempoolCanvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.packets = []; this.queue = [];
+        this.phase = 'flow'; this.phaseT = 0;
+        this.nextPkt = 12; this.flashT = 0; this.frame = 0;
+        this._syncSize();
+        this._active = true;
+        AnimLoop.register(this);
+      },
+
+      _syncSize() {
+        const pw = this.canvas.parentElement;
+        if (!pw) return;
+        const w = pw.offsetWidth, h = pw.offsetHeight;
+        if (w < 1 || h < 1) return;
+        const dpr = devicePixelRatio;
+        if (this.canvas.width !== Math.round(w*dpr) || this.canvas.height !== Math.round(h*dpr)) {
+          this.canvas.width  = Math.round(w * dpr);
+          this.canvas.height = Math.round(h * dpr);
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+      },
+
+      // loop() removed — driven by AnimLoop shared RAF
+
+      update() {
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        const laneY = H * .5;
+        const queueX = W * .22;
+
+        if (this.phase === 'flow') {
+
+          // Neues Paket von rechts spawnen
+          this.nextPkt--;
+          if (this.nextPkt <= 0 && this.queue.length < this.QUEUE_MAX) {
+            const h = 6 + Math.floor(Math.random() * 5);  // Pakethöhe = Fee-Größe
+            const isHighFee = h > 9;
+            this.packets.push({
+              x: W + 14,
+              y: laneY,
+              w: 14 + (isHighFee ? 4 : 0),
+              h,
+              speed: 2.0,
+              color: isHighFee ? '#f7931a' : '#3dd658',
+            });
+            this.nextPkt = 18 + Math.floor(Math.random() * 12);
+          }
+
+          // Pakete nach links bewegen
+          this.packets.forEach(p => p.x -= p.speed);
+
+          // Pakete die Queue-X erreicht haben einreihen
+          this.packets.filter(p => p.x <= queueX + p.w/2).forEach(p => {
+            // Stack-Position: von unten aufbauen
+            const stackH = this.queue.reduce((sum, q) => sum + q.h + 3, 0);
+            const qy = H - 14 - stackH - p.h / 2;
+            this.queue.push({ x: queueX, y: qy, w: p.w, h: p.h, color: p.color, alpha: 1 });
+            p.x = -100; // entfernen
+          });
+          this.packets = this.packets.filter(p => p.x > -20);
+
+          // Queue voll → Bestätigung
+          if (this.queue.length >= this.QUEUE_MAX) {
+            this.phase = 'confirm'; this.phaseT = 0; this.flashT = 0;
+          }
+
+        } else if (this.phase === 'confirm') {
+          this.phaseT++;
+          this.flashT = Math.min(1, this.phaseT / 10);
+
+          // Pakete von unten nach oben verschwinden lassen
+          if (this.phaseT > 8) {
+            const toRemove = Math.floor((this.phaseT - 8) / 4);
+            this.queue.slice(0, toRemove).forEach(q => {
+              q.alpha = Math.max(0, q.alpha - .08);
+              q.y -= 1.2;
+            });
+            this.queue = this.queue.filter(q => q.alpha > 0);
+          }
+
+          if (this.phaseT > 45 || this.queue.length === 0) {
+            this.phase = 'pause'; this.phaseT = 0;
+          }
+
+        } else if (this.phase === 'pause') {
+          this.flashT = Math.max(0, this.flashT - .06);
+          this.phaseT++;
+          if (this.phaseT > 25) {
+            this.phase = 'flow'; this.phaseT = 0;
+            this.queue = []; this.packets = []; this.nextPkt = 8;
+          }
+        }
+      },
+
+      draw() {
+        const ctx = this.ctx;
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        const laneY  = H * .5;
+        const queueX = W * .22;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Fade links
+        const fadeL = ctx.createLinearGradient(0,0,20,0);
+        fadeL.addColorStop(0,'rgba(6,10,5,1)');
+        fadeL.addColorStop(1,'rgba(6,10,5,0)');
+
+        // ── Spur-Linie ──
+        ctx.strokeStyle = 'rgba(61,214,88,0.08)';
+        ctx.lineWidth   = 1;
+        ctx.beginPath();
+        ctx.moveTo(queueX, laneY);
+        ctx.lineTo(W - 8, laneY);
+        ctx.stroke();
+
+        // ── Queue-Bereich — dezente Box ──
+        const qBoxW = W * .32;
+        const qBoxH = H * .72;
+        const qBoxX = queueX - qBoxW / 2;
+        const qBoxY = (H - qBoxH) / 2;
+        ctx.strokeStyle = `rgba(61,214,88,${0.08 + this.flashT * .25})`;
+        ctx.lineWidth   = 1;
+        ctx.beginPath();
+        ctx.roundRect(qBoxX, qBoxY, qBoxW, qBoxH, 3);
+        ctx.stroke();
+
+        // Flash beim Bestätigen
+        if (this.flashT > 0) {
+          const grad = ctx.createLinearGradient(qBoxX, 0, qBoxX + qBoxW, 0);
+          grad.addColorStop(0, `rgba(61,214,88,${this.flashT * .18})`);
+          grad.addColorStop(1, 'rgba(61,214,88,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.roundRect(qBoxX, qBoxY, qBoxW, qBoxH, 3); ctx.fill();
+
+          // "CONFIRMED" Text
+          if (this.flashT > .6 && this.phase === 'confirm') {
+            ctx.fillStyle    = `rgba(61,214,88,${(this.flashT - .6) * 2.5})`;
+            ctx.font         = `bold ${Math.round(H * .1)}px monospace`;
+            ctx.textAlign    = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('OK', queueX, H * .5);
+          }
+        }
+
+        // ── Queue-Pakete (gestapelt) ──
+        this.queue.forEach(q => {
+          ctx.globalAlpha  = q.alpha;
+          // Schatten
+          ctx.shadowColor  = q.color; ctx.shadowBlur = 3;
+          // Paket-Körper
+          ctx.fillStyle    = q.color === '#f7931a'
+            ? 'rgba(247,147,26,.12)' : 'rgba(61,214,88,.10)';
+          ctx.strokeStyle  = q.color;
+          ctx.lineWidth    = 1;
+          ctx.beginPath();
+          ctx.roundRect(q.x - q.w/2, q.y - q.h/2, q.w, q.h, 1.5);
+          ctx.fill(); ctx.stroke();
+          ctx.shadowBlur = 0;
+        });
+        ctx.globalAlpha = 1;
+
+        // ── Fließende Pakete ──
+        this.packets.forEach(p => {
+          // Schweif
+          const trail = ctx.createLinearGradient(p.x + p.w, p.y, p.x - 16, p.y);
+          trail.addColorStop(0, p.color === '#f7931a'
+            ? 'rgba(247,147,26,0)' : 'rgba(61,214,88,0)');
+          trail.addColorStop(1, p.color === '#f7931a'
+            ? 'rgba(247,147,26,.15)' : 'rgba(61,214,88,.12)');
+          ctx.fillStyle = trail;
+          ctx.beginPath(); ctx.rect(p.x - 16, p.y - p.h/2, 16 + p.w, p.h); ctx.fill();
+
+          // Paket
+          ctx.shadowColor = p.color; ctx.shadowBlur = 4;
+          ctx.fillStyle   = p.color === '#f7931a'
+            ? 'rgba(247,147,26,.15)' : 'rgba(61,214,88,.12)';
+          ctx.strokeStyle = p.color;
+          ctx.lineWidth   = 1;
+          ctx.beginPath(); ctx.roundRect(p.x - p.w/2, p.y - p.h/2, p.w, p.h, 1.5);
+          ctx.fill(); ctx.stroke();
+          ctx.shadowBlur = 0;
+        });
+
+        // Fade links
+        ctx.fillStyle = fadeL;
+        ctx.fillRect(0, 0, 22, H);
+      },
+
+      stop() { this._active = false; },
+    };
+
+
+    /* ═══════════════════════════════════════════════════
+       MODUL: Difficulty Canvas Animation
+       Hash-Slot-Machine: Zeichen rotieren, frieren zu 0 ein
+    ═══════════════════════════════════════════════════ */
+    const DifficultyAnim = {
+      frame:  0,
+
+      COLS:    8,     // Hex-Zeichen pro Zeile
+      ROWS:    3,     // Zeilen
+      CHARS:   '0123456789ABCDEF',
+
+      // Pro-Zeichen-State
+      cells:   [],   // { char, frozen, freezeT, rowSeed }
+      frozenCount: 0,
+      phase: 'spin',  // spin → freeze → reset
+      phaseT: 0,
+      FREEZE_INTERVAL: 8,   // frames zwischen jedem Einfrieren
+      HOLD_DUR: 60,
+      RESET_DUR: 20,
+
+      start() {
+        this.canvas = document.getElementById('difficultyCanvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        const c = this.canvas;
+        // Use parent wrapper dimensions for correct sizing
+        const pw = c.parentElement || c;
+        c.width  = (pw.offsetWidth  || 130) * devicePixelRatio;
+        c.height = (pw.offsetHeight || 100) * devicePixelRatio;
+        c.style.width  = '100%';
+        c.style.height = '100%';
+        this.ctx.scale(devicePixelRatio, devicePixelRatio);
+        this.frame = 0;
+        this._initCells();
+        this._active = true;
+        AnimLoop.register(this);
+      },
+
+      _initCells() {
+        this.cells = [];
+        for (let r = 0; r < this.ROWS; r++) {
+          for (let c = 0; c < this.COLS; c++) {
+            this.cells.push({
+              char:     this.CHARS[Math.floor(Math.random() * 16)],
+              frozen:   false,
+              freezeT:  0,
+              spinRate: 2 + Math.floor(Math.random() * 4), // frames zwischen Zeichen-Wechsel
+              timer:    Math.floor(Math.random() * 4),
+              row: r, col: c,
+            });
+          }
+        }
+        this.frozenCount = 0;
+        this.phase = 'spin';
+        this.phaseT = 0;
+      },
+
+      _syncSize() {
+        const pw = this.canvas.parentElement;
+        if (!pw) return;
+        const w = pw.offsetWidth, h = pw.offsetHeight;
+        if (w < 1 || h < 1) return;
+        const dpr = devicePixelRatio;
+        if (this.canvas.width !== Math.round(w * dpr) || this.canvas.height !== Math.round(h * dpr)) {
+          this.canvas.width  = Math.round(w * dpr);
+          this.canvas.height = Math.round(h * dpr);
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+      },
+
+      // loop() removed — driven by AnimLoop shared RAF
+      update() {
+        this.phaseT++;
+
+        if (this.phase === 'spin') {
+          // Rotiere nicht-eingefrorene Zeichen
+          this.cells.forEach(cell => {
+            if (cell.frozen) return;
+            cell.timer--;
+            if (cell.timer <= 0) {
+              cell.char  = this.CHARS[Math.floor(Math.random() * 16)];
+              cell.timer = cell.spinRate;
+            }
+          });
+          // Einfrieren — alle X frames das nächste Zeichen
+          if (this.phaseT % this.FREEZE_INTERVAL === 0) {
+            const next = this.cells.find(c => !c.frozen);
+            if (next) {
+              next.frozen  = true;
+              next.char    = '0';
+              next.freezeT = 1;
+              this.frozenCount++;
+            } else {
+              // Alle eingefroren → halten
+              this.phase  = 'hold';
+              this.phaseT = 0;
+            }
+          }
+        } else if (this.phase === 'hold') {
+          if (this.phaseT >= this.HOLD_DUR) {
+            this.phase  = 'reset';
+            this.phaseT = 0;
+          }
+        } else if (this.phase === 'reset') {
+          if (this.phaseT >= this.RESET_DUR) {
+            this._initCells();
+          }
+        }
+
+        // Freeze-Puls animieren
+        this.cells.forEach(cell => {
+          if (cell.frozen && cell.freezeT > 0) {
+            cell.freezeT = Math.max(0, cell.freezeT - 0.06);
+          }
+        });
+      },
+
+      draw() {
+        const ctx = this.ctx;
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        ctx.clearRect(0, 0, W, H);
+
+        const cw   = (W - 8) / this.COLS;   // Zell-Breite
+        const ch   = (H - 8) / this.ROWS;   // Zell-Höhe
+        const offX = 4;
+        const offY = 4;
+
+        this.cells.forEach(cell => {
+          const x = offX + cell.col * cw + cw / 2;
+          const y = offY + cell.row * ch + ch / 2;
+
+          let color, glow;
+          if (cell.frozen) {
+            const pulse = .5 + .5 * Math.sin(this.frame * .08 + cell.col);
+            const boost  = cell.freezeT;
+            color = `rgba(61,214,88,${0.7 + pulse * .2 + boost * .3})`;
+            glow  = 6 + boost * 14;
+          } else {
+            // Rotierende Zeichen — orange, etwas gedämpft
+            const flicker = .3 + .3 * Math.sin(this.frame * .15 + cell.col * .7 + cell.row);
+            color = `rgba(247,147,26,${flicker})`;
+            glow  = 0;
+          }
+
+          ctx.font          = `bold ${Math.round(cw * .55)}px monospace`;
+          ctx.textAlign     = 'center';
+          ctx.textBaseline  = 'middle';
+          ctx.shadowColor   = cell.frozen ? '#3dd658' : 'transparent';
+          ctx.shadowBlur    = glow;
+          ctx.fillStyle     = color;
+          ctx.fillText(cell.char, x, y);
+          ctx.shadowBlur    = 0;
+        });
+
+        // Trennlinie zwischen gefrorenen und rotierenden Zeichen
+        const frozenInRow0 = this.cells.filter(c => c.row === 0 && c.frozen).length;
+        if (frozenInRow0 > 0 && frozenInRow0 < this.COLS) {
+          const lineX = offX + frozenInRow0 * cw;
+          ctx.strokeStyle = 'rgba(61,214,88,0.4)';
+          ctx.lineWidth   = 1;
+          ctx.setLineDash([2,3]);
+          ctx.beginPath();
+          ctx.moveTo(lineX, offY);
+          ctx.lineTo(lineX, H - offY);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Fade links
+        const fadeL = ctx.createLinearGradient(0,0,30,0);
+        fadeL.addColorStop(0,'rgba(6,10,5,1)');
+        fadeL.addColorStop(1,'rgba(6,10,5,0)');
+        ctx.fillStyle = fadeL;
+        ctx.fillRect(0, 0, 35, H);
+      },
+
+      stop() { this._active = false; },
+    };
+    /* ═══════════════════════════════════════════════════
+       MODUL: Halving Canvas Animation
+       Bitcoin-Coin spaltet sich — symbolisiert Halbierung
+    ═══════════════════════════════════════════════════ */
+    const HalvingAnim = {
+      frame:  0,
+      // Animations-Phasen: 0=ruhig, 1=laden, 2=spalten, 3=zusammenführen
+      phase:     'idle',
+      phaseT:    0,
+      IDLE_DUR:  120,
+      SPLIT_DUR: 50,
+      HOLD_DUR:  40,
+      JOIN_DUR:  35,
+      particles: [],
+
+      start() {
+        this.canvas = document.getElementById('halvingCanvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        const c = this.canvas;
+        // Use parent wrapper dimensions for correct sizing
+        const pw = c.parentElement || c;
+        c.width  = (pw.offsetWidth  || 130) * devicePixelRatio;
+        c.height = (pw.offsetHeight || 100) * devicePixelRatio;
+        c.style.width  = '100%';
+        c.style.height = '100%';
+        this.ctx.scale(devicePixelRatio, devicePixelRatio);
+        this.frame = 0;
+        this.phase = 'idle';
+        this.phaseT = 0;
+        this.particles = [];
+        this._active = true;
+        AnimLoop.register(this);
+      },
+
+      _syncSize() {
+        const pw = this.canvas.parentElement;
+        if (!pw) return;
+        const w = pw.offsetWidth, h = pw.offsetHeight;
+        if (w < 1 || h < 1) return;
+        const dpr = devicePixelRatio;
+        if (this.canvas.width !== Math.round(w * dpr) || this.canvas.height !== Math.round(h * dpr)) {
+          this.canvas.width  = Math.round(w * dpr);
+          this.canvas.height = Math.round(h * dpr);
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+      },
+
+      // loop() removed — driven by AnimLoop shared RAF
+      updatePhase() {
+        this.phaseT++;
+        if (this.phase === 'idle'  && this.phaseT >= this.IDLE_DUR)  { this.phase = 'split'; this.phaseT = 0; this.spawnParticles(); }
+        if (this.phase === 'split' && this.phaseT >= this.SPLIT_DUR) { this.phase = 'hold';  this.phaseT = 0; }
+        if (this.phase === 'hold'  && this.phaseT >= this.HOLD_DUR)  { this.phase = 'join';  this.phaseT = 0; }
+        if (this.phase === 'join'  && this.phaseT >= this.JOIN_DUR)  { this.phase = 'idle';  this.phaseT = 0; }
+        // Partikel
+        this.particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life -= p.decay; p.vy += .04; });
+        this.particles = this.particles.filter(p => p.life > 0);
+      },
+
+      spawnParticles() {
+        const dpr = devicePixelRatio;
+        const W = this.canvas.width / dpr, H = this.canvas.height / dpr;
+        const cx = W * .55, cy = H * .45;
+        for (let i = 0; i < 14; i++) {
+          const angle = (Math.PI * 2 * i / 14) + (Math.random() - .5) * .3;
+          const speed = .8 + Math.random() * 1.4;
+          this.particles.push({
+            x: cx, y: cy,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1,
+            life: 1, decay: .025 + Math.random() * .015,
+            r: 1.5 + Math.random() * 2,
+          });
+        }
+      },
+
+      // Easing
+      easeOut: t => 1 - Math.pow(1 - t, 3),
+      easeIn:  t => t * t * t,
+      spring:  t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2,
+
+      draw() {
+        const ctx = this.ctx;
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        ctx.clearRect(0, 0, W, H);
+
+        const cx   = W * .55;
+        const cy   = H * .45;
+        const R    = 26;   // Münz-Radius
+        const idle = .5 + .5 * Math.sin(this.frame * .05);
+
+        // Trennlinie-Offset (wie weit die Hälften auseinander sind)
+        let splitOffset = 0;
+        let t = 0;
+        if (this.phase === 'split') {
+          t = this.phaseT / this.SPLIT_DUR;
+          splitOffset = this.easeOut(t) * 18;
+        } else if (this.phase === 'hold') {
+          splitOffset = 18;
+        } else if (this.phase === 'join') {
+          t = this.phaseT / this.JOIN_DUR;
+          splitOffset = (1 - this.spring(t)) * 18;
+        }
+
+        // ── Linke Hälfte ──
+        this._drawHalf(ctx, cx - splitOffset, cy, R, 'left', splitOffset);
+
+        // ── Rechte Hälfte ──
+        this._drawHalf(ctx, cx + splitOffset, cy, R, 'right', splitOffset);
+
+        // ── Trennlinie bei Split ──
+        if (splitOffset > 1) {
+          const alpha = Math.min(1, splitOffset / 10) * .5;
+          ctx.strokeStyle = `rgba(247,147,26,${alpha})`;
+          ctx.lineWidth   = 1;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - R);
+          ctx.lineTo(cx, cy + R);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // ── ½ Labels beim Split ──
+        if (splitOffset > 8) {
+          const alpha = Math.min(1, (splitOffset - 8) / 6);
+          ctx.fillStyle = `rgba(247,147,26,${alpha * .8})`;
+          ctx.font = 'bold 9px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('½', cx - splitOffset - 2, cy + R + 12);
+          ctx.fillText('½', cx + splitOffset + 2, cy + R + 12);
+        }
+
+        // ── Partikel ──
+        this.particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(247,147,26,${p.life * .8})`;
+          ctx.fill();
+        });
+
+        // Fade links
+        const fadeL = ctx.createLinearGradient(0,0,30,0);
+        fadeL.addColorStop(0,'rgba(6,10,5,1)');
+        fadeL.addColorStop(1,'rgba(6,10,5,0)');
+        ctx.fillStyle = fadeL;
+        ctx.fillRect(0, 0, 35, H);
+      },
+
+      _drawHalf(ctx, cx, cy, R, side, splitOffset) {
+        const pulse = .5 + .5 * Math.sin(this.frame * .05);
+        const glow  = splitOffset > 0 ? Math.min(1, splitOffset / 14) : 0;
+
+        ctx.save();
+        ctx.beginPath();
+        if (side === 'left') {
+          ctx.arc(cx, cy, R, Math.PI / 2, -Math.PI / 2, false);
+          ctx.lineTo(cx, cy - R);
+        } else {
+          ctx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, false);
+          ctx.lineTo(cx, cy + R);
+        }
+        ctx.closePath();
+        ctx.clip();
+
+        // Münz-Körper
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, 0, Math.PI * 2);
+        ctx.fillStyle = '#0d1a08';
+        ctx.fill();
+
+        // Münz-Rand
+        ctx.shadowColor = '#f7931a';
+        ctx.shadowBlur  = 6 + pulse * 6 + glow * 12;
+        ctx.strokeStyle = `rgba(247,147,26,${0.55 + pulse * .2 + glow * .25})`;
+        ctx.lineWidth   = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R - 1, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // ₿ Symbol
+        ctx.fillStyle   = `rgba(247,147,26,${0.6 + pulse * .2})`;
+        ctx.font        = `bold ${18 + Math.round(pulse * 2)}px serif`;
+        ctx.textAlign   = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('₿', cx, cy + 1);
+
+        ctx.restore();
+      },
+
+      stop() { this._active = false; },
+    };
+    /* ═══════════════════════════════════════════════════
+       MODUL: Globe Canvas Animation
+       Rotierender Globus mit Node-Punkten und Verbindungen
+    ═══════════════════════════════════════════════════ */
+    const GlobeAnim = {
+      canvas: null, ctx: null, raf: null, frame: 0,
+      rotation: 0,
+      pulses: [],     // Verbindungs-Pulse zwischen Nodes
+      nextPulse: 0,
+
+      // 8 Node-Positionen auf Globus (lat, lon in Grad)
+      NODE_COORDS: [
+        { lat:  51, lon:  10 },  // Europa
+        { lat:  40, lon: -74 },  // USA Ost
+        { lat:  37, lon:-122 },  // USA West
+        { lat: -23, lon: -46 },  // Brasilien
+        { lat:  35, lon: 139 },  // Japan
+        { lat:  22, lon: 114 },  // Hong Kong
+        { lat: -33, lon: 151 },  // Australien
+        { lat:  55, lon:  37 },  // Russland
+      ],
+
+      start() {
+        this.canvas = document.getElementById('globeCanvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.rotation = 0;
+        this.pulses = [];
+        this.nextPulse = 30;
+        this.frame = 0;
+        this._syncSize();
+        this._active = true;
+        AnimLoop.register(this);
+      },
+
+      _syncSize() {
+        const pw = this.canvas.parentElement;
+        if (!pw) return;
+        const w = pw.offsetWidth, h = pw.offsetHeight;
+        if (w < 1 || h < 1) return;
+        const dpr = devicePixelRatio;
+        if (this.canvas.width !== Math.round(w * dpr) || this.canvas.height !== Math.round(h * dpr)) {
+          this.canvas.width  = Math.round(w * dpr);
+          this.canvas.height = Math.round(h * dpr);
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+      },
+
+      // project() — Lat/Lon → 2D mit Rotation
+      project(lat, lon, cx, cy, R) {
+        const phi   = (90 - lat) * Math.PI / 180;
+        const theta = (lon + this.rotation * 180 / Math.PI) * Math.PI / 180;
+        const x3 = R * Math.sin(phi) * Math.cos(theta);
+        const y3 = R * Math.cos(phi);
+        const z3 = R * Math.sin(phi) * Math.sin(theta);
+        // Einfache isometrische Projektion
+        return {
+          x:    cx + x3 * 0.9,
+          y:    cy - y3 * 0.9,
+          z:    z3,           // z > 0 = sichtbar (vorne)
+          vis:  z3 > -R * .2, // leicht über Horizont sichtbar
+        };
+      },
+
+      update() {
+        this.rotation += 0.004; // langsame Rotation
+        // Neuen Puls zwischen zwei zufälligen Nodes spawnen
+        this.nextPulse--;
+        if (this.nextPulse <= 0) {
+          const a = Math.floor(Math.random() * this.NODE_COORDS.length);
+          let   b = a;
+          while (b === a) b = Math.floor(Math.random() * this.NODE_COORDS.length);
+          this.pulses.push({ from: a, to: b, t: 0, speed: .018 });
+          this.nextPulse = 25 + Math.floor(Math.random() * 20);
+        }
+        this.pulses.forEach(p => p.t += p.speed);
+        this.pulses = this.pulses.filter(p => p.t < 1.05);
+      },
+
+      draw() {
+        const ctx = this.ctx;
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        const cx  = W * .52;
+        const cy  = H * .5;
+        const R   = Math.min(W, H) * .38;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Fade links
+        const fadeL = ctx.createLinearGradient(0,0,24,0);
+        fadeL.addColorStop(0,'rgba(6,10,5,1)');
+        fadeL.addColorStop(1,'rgba(6,10,5,0)');
+
+        // ── Globus-Umriss ──
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(247,147,26,0.45)';
+        ctx.lineWidth   = 1.2;
+        ctx.stroke();
+
+        // Subtiler Globus-Glow
+        const gGlow = ctx.createRadialGradient(cx, cy, R*.6, cx, cy, R*1.1);
+        gGlow.addColorStop(0, 'rgba(247,147,26,.10)');
+        gGlow.addColorStop(1, 'rgba(247,147,26,0)');
+        ctx.fillStyle = gGlow;
+        ctx.beginPath(); ctx.arc(cx, cy, R*1.1, 0, Math.PI*2); ctx.fill();
+
+        // ── Breitenlinien (3 Stück) ──
+        [-45, 0, 45].forEach(lat => {
+          const phi = (90 - lat) * Math.PI / 180;
+          const ry  = R * Math.cos(phi);
+          const rx  = R * Math.sin(phi) * 0.9;
+          if (rx < 2) return;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy - ry * 0.9, rx, rx * 0.25, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(247,147,26,0.22)';
+          ctx.lineWidth   = .8;
+          ctx.stroke();
+        });
+
+        // ── Längslinien (4 Stück) ──
+        for (let i = 0; i < 4; i++) {
+          const lonOffset = (i / 4) * Math.PI * 2 + this.rotation;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, R * 0.9 * Math.abs(Math.cos(lonOffset)), R * 0.9, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(247,147,26,0.15)';
+          ctx.lineWidth   = .8;
+          ctx.stroke();
+        }
+
+        // ── Node-Positionen berechnen ──
+        const projected = this.NODE_COORDS.map(n =>
+          this.project(n.lat, n.lon, cx, cy, R)
+        );
+
+        // ── Verbindungslinien zwischen sichtbaren Nodes ──
+        projected.forEach((a, i) => {
+          if (!a.vis) return;
+          projected.forEach((b, j) => {
+            if (j <= i || !b.vis) return;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = 'rgba(61,214,88,0.22)';
+            ctx.lineWidth   = .8;
+            ctx.stroke();
+          });
+        });
+
+        // ── Puls-Wellen auf Verbindungen ──
+        this.pulses.forEach(p => {
+          const a = projected[p.from];
+          const b = projected[p.to];
+          if (!a.vis || !b.vis) return;
+          const px = a.x + (b.x - a.x) * p.t;
+          const py = a.y + (b.y - a.y) * p.t;
+          const alpha = Math.sin(p.t * Math.PI);
+          ctx.beginPath();
+          ctx.arc(px, py, 3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(61,214,88,${alpha})`;
+          ctx.shadowColor = '#3dd658'; ctx.shadowBlur = 8 * alpha;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        // ── Node-Punkte ──
+        projected.forEach(n => {
+          if (!n.vis) return;
+          const alpha = Math.min(1, (n.z + R * .2) / (R * .5));
+          const pulse = .6 + .4 * Math.sin(this.frame * .06 + n.x);
+
+          // Glow-Ring
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(61,214,88,${alpha * .2 * pulse})`;
+          ctx.fill();
+
+          // Punkt
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle   = `rgba(6,10,5,.9)`;
+          ctx.strokeStyle = `rgba(61,214,88,${alpha * (.7 + pulse * .3)})`;
+          ctx.lineWidth   = 1.5;
+          ctx.shadowColor = '#3dd658';
+          ctx.shadowBlur  = 8 * alpha * pulse;
+          ctx.fill();
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        });
+
+        // Fade-Overlay links
+        ctx.fillStyle = fadeL;
+        ctx.fillRect(0, 0, 28, H);
+      },
+
+      stop() { this._active = false; },
+    };
+    /* ═══════════════════════════════════════════════════
+       MODUL: Pacman Canvas Animation
+       Bitcoin Pac-Man frisst Altcoins von rechts
+    ═══════════════════════════════════════════════════ */
+    const PacmanAnim = {
+      canvas: null, ctx: null, raf: null, frame: 0,
+      coins:  [],
+      particles: [],
+      mouthAngle: 0.22,
+      nextSpawn:  50,
+
+      start() {
+        this.canvas = document.getElementById('pacmanCanvas');
+        if (!this.canvas) return;
+        this.ctx   = this.canvas.getContext('2d');
+        this.coins = [];
+        this.particles = [];
+        this.frame = 0;
+        this.mouthAngle = 0.22;
+        this.nextSpawn = 50;
+        this._syncSize();
+        this._active = true;
+        AnimLoop.register(this);
+      },
+
+      _syncSize() {
+        const pw = this.canvas.parentElement;
+        if (!pw) return;
+        const w = pw.offsetWidth, h = pw.offsetHeight;
+        if (w < 1 || h < 1) return;
+        const dpr = devicePixelRatio;
+        if (this.canvas.width !== Math.round(w * dpr) || this.canvas.height !== Math.round(h * dpr)) {
+          this.canvas.width  = Math.round(w * dpr);
+          this.canvas.height = Math.round(h * dpr);
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+      },
+
+      // loop() removed — driven by AnimLoop shared RAF
+
+      update() {
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        const cy  = H * .52;
+        const R   = H * .22;
+        const px  = R * 1.4;
+
+        // Nächsten Altcoin erspähen
+        const nearest = this.coins.length
+          ? this.coins.reduce((a,b) => Math.abs(a.x-px) < Math.abs(b.x-px) ? a : b)
+          : null;
+        const hungry = nearest && nearest.x - px < R * 4 && nearest.x > px;
+
+        // Mund — kontinuierlich chompend wenn Coins da sind, sonst leicht offen
+        if (this.coins.length > 0) {
+          this.mouthAngle = 0.08 + 0.24 * Math.abs(Math.sin(this.frame * .15));
+        } else {
+          this.mouthAngle = 0.08 + 0.10 * Math.abs(Math.sin(this.frame * .08));
+        }
+
+        // Altcoins spawnen — immer 2-3 in der Pipeline
+        this.nextSpawn--;
+        if (this.nextSpawn <= 0) {
+          // Letzten Coin-X finden damit Abstand gleichmäßig
+          const lastX = this.coins.length
+            ? Math.max(...this.coins.map(c => c.x))
+            : W * .5;
+          const minDist = R * 3.5;
+          if (lastX < W - minDist || this.coins.length === 0) {
+            this.coins.push({
+              x: W + R,
+              y: cy + (Math.random() - .5) * R * .4,
+              speed: 1.3,
+              r: R * .38,
+            });
+          }
+          this.nextSpawn = 28;
+        }
+
+        // Altcoins bewegen
+        this.coins.forEach(c => c.x -= c.speed);
+
+        // Fressen
+        this.coins.forEach(c => {
+          if (Math.abs(c.x - px) < R * .85) {
+            for (let i = 0; i < 10; i++) {
+              const a = Math.PI * 2 * i / 10 + Math.random() * .3;
+              this.particles.push({
+                x: px, y: cy,
+                vx: Math.cos(a) * (1.5 + Math.random() * 2),
+                vy: Math.sin(a) * (1.5 + Math.random() * 2),
+                life: 1,
+              });
+            }
+            c.x = -100;
+          }
+        });
+        this.coins = this.coins.filter(c => c.x > -20);
+
+        this.particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          p.vx *= .86; p.vy *= .86;
+          p.life -= .055;
+        });
+        this.particles = this.particles.filter(p => p.life > 0);
+      },
+
+      draw() {
+        const ctx = this.ctx;
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        const cy  = H * .52;
+        const R   = H * .22;
+        const px  = R * 1.4;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Fade links
+        const fadeL = ctx.createLinearGradient(0,0,24,0);
+        fadeL.addColorStop(0,'rgba(6,10,5,1)');
+        fadeL.addColorStop(1,'rgba(6,10,5,0)');
+
+        // ── Altcoin-Dots (grün, passend zum App-Design) ──
+        this.coins.forEach(c => {
+          // Äußerer Glow
+          const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r * 2);
+          g.addColorStop(0, 'rgba(61,214,88,.15)');
+          g.addColorStop(1, 'rgba(61,214,88,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath(); ctx.arc(c.x, c.y, c.r * 2, 0, Math.PI * 2); ctx.fill();
+
+          // Kreis
+          ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+          ctx.fillStyle   = 'rgba(8,16,8,.95)';
+          ctx.strokeStyle = 'rgba(61,214,88,.65)';
+          ctx.lineWidth   = 1.5;
+          ctx.shadowColor = '#3dd658'; ctx.shadowBlur = 6;
+          ctx.fill(); ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // Alt-Symbol
+          ctx.fillStyle = 'rgba(61,214,88,.8)';
+          ctx.font = `bold ${Math.round(c.r * 1.0)}px monospace`;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('α', c.x, c.y + 1);
+        });
+
+        // ── Partikel (orange) ──
+        this.particles.forEach(p => {
+          ctx.globalAlpha = p.life;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2.5 * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = '#f7931a';
+          ctx.shadowColor = '#f7931a'; ctx.shadowBlur = 5;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+        ctx.globalAlpha = 1;
+
+        // ── Bitcoin Pac-Man ──
+        const pulse = .5 + .5 * Math.sin(this.frame * .07);
+        const mouth = this.mouthAngle * Math.PI;
+
+        // Glow
+        const glow = ctx.createRadialGradient(px, cy, R*.2, px, cy, R * 1.8);
+        glow.addColorStop(0, `rgba(247,147,26,${.14 + pulse * .08})`);
+        glow.addColorStop(1, 'rgba(247,147,26,0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(px, cy, R * 1.8, 0, Math.PI * 2); ctx.fill();
+
+        // Körper
+        ctx.shadowColor = '#f7931a'; ctx.shadowBlur = 10 + pulse * 8;
+        ctx.fillStyle   = '#f7931a';
+        ctx.beginPath();
+        ctx.moveTo(px, cy);
+        ctx.arc(px, cy, R, mouth, Math.PI * 2 - mouth);
+        ctx.closePath();
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Auge
+        ctx.fillStyle = 'rgba(0,0,0,.7)';
+        ctx.beginPath();
+        ctx.arc(px + R * .05, cy - R * .4, R * .1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Fade-Overlay links
+        ctx.fillStyle = fadeL;
+        ctx.fillRect(0, 0, 28, H);
+      },
+
+      stop() { this._active = false; },
+    };
+
+    /* ═══════════════════════════════════════════════════
+       MODUL: Blockchain Canvas Animation
+       Kette baut sich auf — neuer Block poppt rechts an
+    ═══════════════════════════════════════════════════ */
+    const BlockchainAnim = {
+      frame:  0,
+
+      BLOCK_W:   36,
+      BLOCK_H:   26,
+      STEP:      52,    // Abstand Mitte-zu-Mitte
+      SNAP_SPEED: 4,    // px/frame während Block anfliegt
+
+      blocks:      [],  // { x, targetX, scale, bounce, id, snapped }
+      chainOffset: 0,   // die ganze Kette bewegt sich nach links
+      shiftAnim:   0,   // läuft wenn Kette nach links rückt (0–STEP)
+      nextSpawn:   0,   // frames bis nächster Block
+
+      start() {
+        this.canvas = document.getElementById('blockchainCanvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        const c = this.canvas;
+        // Use parent wrapper dimensions for correct sizing
+        const pw = c.parentElement || c;
+        c.width  = (pw.offsetWidth  || 130) * devicePixelRatio;
+        c.height = (pw.offsetHeight || 100) * devicePixelRatio;
+        c.style.width  = '100%';
+        c.style.height = '100%';
+        this.ctx.scale(devicePixelRatio, devicePixelRatio);
+        this.blocks = [];
+        this.chainOffset = 0;
+        this.shiftAnim = 0;
+        this.frame = 0;
+        this.nextSpawn = 30;
+        if (this.raf) cancelAnimationFrame(this.raf);
+        // Initiale Kette vorbelegen
+        const dpr = devicePixelRatio;
+        const W = this.canvas.width / dpr;
+        const cy = this.canvas.height / devicePixelRatio / 2;
+        for (let i = 0; i < 4; i++) {
+          const tx = W * .2 + i * this.STEP;
+          this.blocks.push({
+            x: tx, targetX: tx, scale: 1, bounce: 0, snapped: true,
+            id: Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase().padStart(4,'0'),
+          });
+        }
+        this._active = true;
+        AnimLoop.register(this);
+      },
+
+
+      _syncSize() {
+        const pw = this.canvas.parentElement;
+        if (!pw) return;
+        const w = pw.offsetWidth, h = pw.offsetHeight;
+        if (w < 1 || h < 1) return;
+        const dpr = devicePixelRatio;
+        if (this.canvas.width !== Math.round(w * dpr) || this.canvas.height !== Math.round(h * dpr)) {
+          this.canvas.width  = Math.round(w * dpr);
+          this.canvas.height = Math.round(h * dpr);
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+      },
+      // loop() removed — driven by AnimLoop shared RAF
+
+      update() {
+        const dpr = devicePixelRatio;
+        const W = this.canvas.width / dpr;
+
+        // Kette nach links verschieben wenn shiftAnim aktiv
+        if (this.shiftAnim > 0) {
+          const step = Math.min(this.shiftAnim, this.SNAP_SPEED * 1.5);
+          this.shiftAnim -= step;
+          this.chainOffset += step;
+          this.blocks.forEach(b => { if (b.snapped) b.x -= step; b.targetX -= step; });
+        }
+
+        // Neuen Block spawnen
+        this.nextSpawn--;
+        if (this.nextSpawn <= 0 && this.shiftAnim <= 0) {
+          const lastX = this.blocks.length
+            ? Math.max(...this.blocks.map(b => b.targetX))
+            : W * .6;
+          const targetX = lastX + this.STEP;
+          this.blocks.push({
+            x: W + this.BLOCK_W,   // startet rechts außerhalb
+            targetX,
+            scale: 0.4,
+            bounce: 0,
+            snapped: false,
+            id: Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase().padStart(4,'0'),
+          });
+          this.nextSpawn = 90 + Math.floor(Math.random() * 40);
+        }
+
+        // Einfliegenden Block bewegen
+        this.blocks.forEach(b => {
+          if (b.snapped) return;
+          const dist = b.targetX - b.x;
+          if (Math.abs(dist) < 2) {
+            // SNAP — einrasten
+            b.x = b.targetX;
+            b.snapped = true;
+            b.bounce  = 1;   // Bounce starten
+            // Kette um STEP nach links verschieben
+            this.shiftAnim = this.STEP;
+          } else {
+            // Einfliegen — beschleunigt sich beim Näherkommen
+            b.x += dist * 0.14;
+            b.scale = 0.4 + (1 - Math.abs(dist) / (W * .5)) * 0.6;
+            b.scale = Math.max(0.4, Math.min(1.1, b.scale));
+          }
+        });
+
+        // Bounce-Easing
+        this.blocks.forEach(b => {
+          if (!b.snapped || b.bounce <= 0) return;
+          b.bounce -= 0.04;
+          if (b.bounce < 0) b.bounce = 0;
+          // Spring: scale über 1 dann zurück
+          b.scale = 1 + Math.sin(b.bounce * Math.PI) * 0.25;
+        });
+
+        // Blöcke die weit links sind entfernen
+        this.blocks = this.blocks.filter(b => b.x > -this.BLOCK_W * 2);
+      },
+
+      draw() {
+        const ctx = this.ctx;
+        const dpr = devicePixelRatio;
+        const W   = this.canvas.width / dpr;
+        const H   = this.canvas.height / dpr;
+        const cy  = H / 2;
+        ctx.clearRect(0, 0, W, H);
+
+        // Fade links
+        const fadeL = ctx.createLinearGradient(0,0,45,0);
+        fadeL.addColorStop(0,'rgba(6,10,5,1)');
+        fadeL.addColorStop(1,'rgba(6,10,5,0)');
+
+        const snapped = this.blocks.filter(b => b.snapped);
+
+        // ── Kettenlinie nur zwischen eingerasteten Blöcken ──
+        if (snapped.length >= 2) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(247,147,26,0.7)';
+          ctx.lineWidth = 2;
+          ctx.shadowColor = '#f7931a';
+          ctx.shadowBlur  = 6;
+          snapped.forEach((b, i) => {
+            i === 0 ? ctx.moveTo(b.x, cy) : ctx.lineTo(b.x, cy);
+          });
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        // ── Linie vom letzten Block zum einfliegenden ──
+        const flying = this.blocks.find(b => !b.snapped);
+        if (flying && snapped.length) {
+          const last = snapped[snapped.length - 1];
+          const prog = 1 - (flying.x - flying.targetX) / (W * .6);
+          ctx.beginPath();
+          ctx.setLineDash([4, 4]);
+          ctx.strokeStyle = `rgba(247,147,26,${Math.max(0, Math.min(0.65, prog))})`;
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(last.x, cy);
+          ctx.lineTo(flying.x, cy);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // ── Alle Blöcke zeichnen ──
+        this.blocks.forEach(b => {
+          ctx.save();
+          ctx.translate(b.x, cy);
+          ctx.scale(b.scale, b.scale);
+
+          const bw = this.BLOCK_W, bh = this.BLOCK_H;
+          const isNew = b.bounce > 0.5;
+
+          // Glow beim Einrasten
+          if (b.bounce > 0) {
+            ctx.shadowColor = '#f7931a';
+            ctx.shadowBlur  = 26 * b.bounce;
+          } else {
+            ctx.shadowColor = '#f7931a';
+            ctx.shadowBlur  = 5;
+          }
+
+          // Block
+          ctx.fillStyle   = 'rgba(16,26,10,.95)';
+          ctx.strokeStyle = isNew
+            ? `rgba(247,147,26,${0.8 + b.bounce * 0.2})`
+            : 'rgba(247,147,26,0.75)';
+          ctx.lineWidth = isNew ? 2.5 : 1.8;
+          ctx.beginPath();
+          ctx.roundRect(-bw/2, -bh/2, bw, bh, 3);
+          ctx.fill();
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // Kettenstift links und rechts
+          if (b.snapped) {
+            ctx.fillStyle = 'rgba(247,147,26,0.85)';
+            ctx.shadowColor = '#f7931a'; ctx.shadowBlur = 4;
+            ctx.beginPath(); ctx.arc(-bw/2, 0, 3, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc( bw/2, 0, 3, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+
+          // Hash-ID
+          ctx.fillStyle = `rgba(247,147,26,${b.snapped ? 0.85 : 0.45})`;
+          ctx.font = '7px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(b.id, 0, 0);
+
+          ctx.restore();
+        });
+
+        // Fade-Overlay
+        ctx.fillStyle = fadeL;
+        ctx.fillRect(0, 0, 50, H);
+      },
+
+      stop() { this._active = false; },
     };
 
     /* ── Kategorienamen für Legende ── */
@@ -3912,6 +5577,26 @@
       btn.textContent = open ? 'schließen ✕' : 'wie berechnet? ›';
     }
 
+    function setP1Currency(cur) {
+      state.currency = cur;
+      // Toggle-Buttons updaten
+      const btnEUR = document.getElementById('p1BtnEUR');
+      const btnUSD = document.getElementById('p1BtnUSD');
+      if (btnEUR && btnUSD) {
+        const activeStyle   = 'background:var(--orange);color:#000;';
+        const inactiveStyle = 'background:transparent;color:var(--muted);';
+        btnEUR.style.cssText += cur === 'EUR' ? activeStyle : inactiveStyle;
+        btnUSD.style.cssText += cur === 'USD' ? activeStyle : inactiveStyle;
+      }
+      UI.updateTicker();
+      UI.updatePortfolioValue();
+      UI.renderTable();
+      PnL.render();
+      SavingsCalc.render();
+      Portfolio.render();
+      Portfolio.updateMetalPriceInfo();
+    }
+
     function setCurrency(c) {
       state.currency = c;
       UI.updateToggle();
@@ -3924,7 +5609,7 @@
     }
 
     App.init().then(() => {
-      // Block-Höhe für Halving-Countdown — falls noch nicht durch Dashboard geladen
+      AnimLoop.start();
       if (!state.blockHeight) {
         fetch('https://mempool.space/api/blocks/tip/height')
           .then(r => r.json())
